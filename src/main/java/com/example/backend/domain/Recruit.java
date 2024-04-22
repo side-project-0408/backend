@@ -1,4 +1,4 @@
-package com.example.side.domain;
+package com.example.backend.domain;
 
 
 import jakarta.persistence.*;
@@ -20,8 +20,6 @@ public class Recruit {
 
     @Column
     private String position;
-
-
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "project_id")
