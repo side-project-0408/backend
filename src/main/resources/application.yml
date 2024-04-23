@@ -1,14 +1,16 @@
+# JPA
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/backend
+    url: ${SPRING_DATASOURCE_URL}
     username: root
-    password: 0000
-
-  # spring data jpa ??
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
-    database-platform: org.hibernate.dialect.MySQL57Dialect
-    open-in-view: false
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
