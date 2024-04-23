@@ -1,4 +1,4 @@
-package com.example.backend.api;
+package com.example.backend.common.api;
 
 import org.springframework.stereotype.Component;
 
