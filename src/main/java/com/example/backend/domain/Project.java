@@ -15,6 +15,7 @@ import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Project {
@@ -76,7 +77,7 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private List<Recruit> recruits = new ArrayList<>();
 
-    public void setRecruit(List<Recruit> recruits) {
+    public void updateRecruit(List<Recruit> recruits) {
         this.recruits = recruits;
     }
 

@@ -1,6 +1,6 @@
 package com.example.backend.dto.response.project;
 
-import com.example.backend.dto.request.project.RecruitDto;
+import com.example.backend.dto.request.project.RecruitRequestDto;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -26,6 +26,6 @@ public class ProjectResponseDto {
 
     private Boolean recent;
 
-    private RecruitDto recruit;
+    private RecruitRequestDto recruit;
 
 }

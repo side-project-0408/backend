@@ -5,7 +5,7 @@ import com.example.backend.domain.Recruit;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
-import com.example.backend.dto.request.project.RecruitDto;
+import com.example.backend.dto.request.project.RecruitRequestDto;
 import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
 import com.example.backend.repository.ProjectRepository;
@@ -43,7 +43,7 @@ public class ProjectService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        for (RecruitDto recruitDto : request.getRecruit()) {
+        for (RecruitRequestDto recruitDto : request.getRecruit()) {
             recruits.add(Recruit.builder()
                     .project(project)
                     .position(recruitDto.getPosition())
@@ -52,7 +52,7 @@ public class ProjectService {
                     .build());
         }
 
-        project.setRecruit(recruits);
+        project.updateRecruit(recruits);
 
         projectRepository.save(project);
 

@@ -24,6 +24,6 @@ public class ProjectRequestDto {
 
     private String description;
 
-    private List<RecruitDto> recruit;
+    private List<RecruitRequestDto> recruit;
 
 }

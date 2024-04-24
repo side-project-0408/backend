@@ -1,12 +1,20 @@
 package com.example.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Comment {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +37,12 @@ public class Comment {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+    public void updateLastModifiedAt(LocalDateTime lastModifiedAt) {
+        this.lastModifiedAt = lastModifiedAt;
+    }
+
 }
