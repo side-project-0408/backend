@@ -22,9 +22,11 @@ public class QProject extends EntityPathBase<Project> {
 
     public static final QProject project = new QProject("project");
 
+    public final ListPath<Comment, QComment> comments = this.<Comment, QComment>createList("comments", Comment.class, QComment.class, PathInits.DIRECT2);
+
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
-    public final DateTimePath<java.time.LocalDateTime> deadline = createDateTime("deadline", java.time.LocalDateTime.class);
+    public final DatePath<java.time.LocalDate> deadline = createDate("deadline", java.time.LocalDate.class);
 
     public final StringPath description = createString("description");
 
@@ -43,6 +45,8 @@ public class QProject extends EntityPathBase<Project> {
     public final SetPath<Integer, NumberPath<Integer>> projectLike = this.<Integer, NumberPath<Integer>>createSet("projectLike", Integer.class, NumberPath.class, PathInits.DIRECT2);
 
     public final StringPath recruitment = createString("recruitment");
+
+    public final ListPath<Recruit, QRecruit> recruits = this.<Recruit, QRecruit>createList("recruits", Recruit.class, QRecruit.class, PathInits.DIRECT2);
 
     public final StringPath softSkill = createString("softSkill");
 

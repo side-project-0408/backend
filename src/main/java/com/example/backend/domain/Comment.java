@@ -9,7 +9,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 public class Comment {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long commentId;
 

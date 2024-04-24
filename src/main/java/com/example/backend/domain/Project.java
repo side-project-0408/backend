@@ -1,17 +1,25 @@
 package com.example.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.*;
 
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Project {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_id")
     private Long projectId;
 
@@ -20,7 +28,7 @@ public class Project {
     @Column(name = "file_url")
     private String projectFileUrl;
 
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
     private String recruitment;
 
@@ -50,6 +58,7 @@ public class Project {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "projectLike", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "user_id")
@@ -58,5 +67,17 @@ public class Project {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "created_id")
     private User user;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
+    private List<Recruit> recruits = new ArrayList<>();
+
+    public void setRecruit(List<Recruit> recruits) {
+        this.recruits = recruits;
+    }
 
 }
