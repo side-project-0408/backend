@@ -1,6 +1,7 @@
 package com.example.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -71,4 +73,15 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Project> projects = new ArrayList<>();
 
+    public User(Long userId, String nickname, String position, String userFileUrl, String techStack,
+                int viewCount, int favoriteCount, LocalDateTime createdAt) {
+        this.userId = userId;
+        this.nickname = nickname;
+        this.position = position;
+        this.userFileUrl = userFileUrl;
+        this.techStack = techStack;
+        this.viewCount = viewCount;
+        this.favoriteCount = favoriteCount;
+        this.createdAt = createdAt;
+    }
 }
