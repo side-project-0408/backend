@@ -4,6 +4,9 @@ import com.example.backend.dto.response.comment.CommentResponseDto;
 import com.example.backend.dto.response.comment.QCommentResponseDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.util.List;
 
@@ -15,9 +18,9 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<CommentResponseDto> findSliceByProject(Long projectId, int page, int size) {
+    public Slice<CommentResponseDto> findSliceByProject(Long projectId, Pageable pageable) {
 
-        List<CommentResponseDto> result = queryFactory.select(new QCommentResponseDto(
+        List<CommentResponseDto> content = queryFactory.select(new QCommentResponseDto(
                         comment.commentId,
                         comment.user.userId,
                         comment.user.nickname,
@@ -28,13 +31,17 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                     .from(comment)
                     .where(comment.project.projectId.eq(projectId))
                     .orderBy(comment.createdAt.asc())
-                    .offset(page)
-                    .limit(size + 1)
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize() + 1)
                     .fetch();
 
-        System.out.println(result.toString());
+        boolean hasNext = false;
+        if (content.size() > pageable.getPageSize()) {
+            content.remove(pageable.getPageSize());
+            hasNext = true;
+        }
 
-        return result;
+        return new SliceImpl<>(content, pageable, hasNext);
 
     }
 

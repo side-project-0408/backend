@@ -7,6 +7,10 @@ import com.example.backend.dto.request.project.CommentRequestDto;
 import com.example.backend.dto.response.comment.CommentResponseDto;
 import com.example.backend.repository.comment.CommentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +37,10 @@ public class CommentService {
 
     }
 
-    public List<CommentResponseDto> getComments(Long projectId, int page, int size) {
+    public Slice<CommentResponseDto> getComments(Long projectId, int page, int size) {
 
-        return commentRepository.findSliceByProject(projectId, page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        return commentRepository.findSliceByProject(projectId, pageable);
 
     }
 

@@ -2,11 +2,13 @@ package com.example.backend.repository.comment;
 
 import com.example.backend.domain.Comment;
 import com.example.backend.dto.response.comment.CommentResponseDto;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
 public interface CommentRepositoryCustom {
 
-    List<CommentResponseDto> findSliceByProject(Long projectId, int page, int size);
+    Slice<CommentResponseDto> findSliceByProject(Long projectId, Pageable pageable);
 
 }
