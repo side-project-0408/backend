@@ -10,9 +10,6 @@ import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
 import com.example.backend.repository.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,14 +66,6 @@ public class ProjectService {
         if (request.getSort() == null) sort = "createdAt";
         else sort = request.getSort();
 
-        // 페이징
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(),
-                Sort.by(request.getSort()).descending());
-
-
-
-
-
 
         return ProjectResponseDto.builder().build();
     }
@@ -91,6 +80,14 @@ public class ProjectService {
         return ProjectResponseDto.builder().build();
     }
 
+    public String projectFavorite(Long projectId, Long userId) {
 
+        Project project = projectRepository.findByProjectId(projectId);
+
+        project.addProjectLike(userId);
+        project.updateFavoriteCount();
+
+        return "Project favorite success";
+    }
 
 }
