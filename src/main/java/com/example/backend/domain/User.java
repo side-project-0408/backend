@@ -81,4 +81,15 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Project> projects = new ArrayList<>();
 
+    public User(Long userId, String nickname, String position, String userFileUrl, String techStack,
+                int viewCount, int favoriteCount, LocalDateTime createdAt) {
+        this.userId = userId;
+        this.nickname = nickname;
+        this.position = position;
+        this.userFileUrl = userFileUrl;
+        this.techStack = techStack;
+        this.viewCount = viewCount;
+        this.favoriteCount = favoriteCount;
+        this.createdAt = createdAt;
+    }
 }
