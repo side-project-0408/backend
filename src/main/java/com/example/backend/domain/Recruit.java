@@ -1,14 +1,19 @@
 package com.example.backend.domain;
 
-
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Recruit {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recruit_id")
     private Long recruitId;
 
@@ -24,4 +29,5 @@ public class Recruit {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
 }

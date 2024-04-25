@@ -1,6 +1,9 @@
 package com.example.backend.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -11,10 +14,13 @@ import java.util.Set;
 
 @Entity
 @NoArgsConstructor
+@Getter
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
@@ -65,11 +71,13 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "userLike", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "favorite_id")
     private Set<Integer> userLike = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Project> projects = new ArrayList<>();
 
