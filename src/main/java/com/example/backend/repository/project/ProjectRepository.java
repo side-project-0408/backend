@@ -1,4 +1,4 @@
-package com.example.backend.repository;
+package com.example.backend.repository.project;
 
 import com.example.backend.domain.Project;
 import com.example.backend.dto.request.project.ProjectSearchDto;

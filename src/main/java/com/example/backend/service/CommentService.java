@@ -4,14 +4,14 @@ import com.example.backend.domain.Comment;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.project.CommentRequestDto;
-import com.example.backend.repository.CommentRepository;
+import com.example.backend.dto.response.comment.CommentResponseDto;
+import com.example.backend.repository.comment.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -31,7 +31,13 @@ public class CommentService {
 
         return "Comment creation completed";
 
-    };
+    }
+
+    public List<CommentResponseDto> getComments(Long projectId, int page, int size) {
+
+        return commentRepository.findSliceByProject(projectId, page, size);
+
+    }
 
     public String updateComment(Long projectId, CommentRequestDto request) {
 
@@ -61,4 +67,5 @@ public class CommentService {
         return "Comment delete completed";
 
     }
+
 }
