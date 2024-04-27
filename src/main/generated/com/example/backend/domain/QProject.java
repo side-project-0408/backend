@@ -36,6 +36,8 @@ public class QProject extends EntityPathBase<Project> {
 
     public final DateTimePath<java.time.LocalDateTime> lastModifiedAt = createDateTime("lastModifiedAt", java.time.LocalDateTime.class);
 
+    public final StringPath position = createString("position");
+
     public final StringPath projectFileUrl = createString("projectFileUrl");
 
     public final NumberPath<Long> projectId = createNumber("projectId", Long.class);

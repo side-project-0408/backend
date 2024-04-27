@@ -19,8 +19,8 @@ public class ProjectController {
     }
 
     @GetMapping("/projects")
-    public CommonApiResponse<?> getProjects(@RequestBody ProjectSearchDto projectSearchDto) {
-        return new CommonApiResponse<>("success", projectService.findProjects(projectSearchDto));
+    public CommonApiResponse<?> getProjects(@ModelAttribute ProjectSearchDto request) {
+        return new CommonApiResponse<>("success", projectService.findProjects(request));
     }
 
     @GetMapping("/projects/{projectId}")

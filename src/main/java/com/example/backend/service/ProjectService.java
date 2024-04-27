@@ -10,6 +10,9 @@ import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
 import com.example.backend.repository.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,8 @@ public class ProjectService {
     public String postProject(ProjectRequestDto request) {
 
         List<Recruit> recruits = new ArrayList<>();
+
+        String position = "";
 
         Project project = Project.builder().user(User.builder().userId(request.getCreatedId()).build())
                 .title(request.getTitle())
@@ -47,8 +52,10 @@ public class ProjectService {
                     .currentCount(recruitDto.getCurrentCount())
                     .targetCount(recruitDto.getTargetCount())
                     .build());
+            position += recruitDto.getPosition() + ", ";
         }
 
+        project.updatePosition(position.substring(0, position.length() - 2));
         project.updateRecruit(recruits);
 
         projectRepository.save(project);
@@ -59,12 +66,11 @@ public class ProjectService {
 
     public ProjectResponseDto findProjects(ProjectSearchDto request) {
 
-        //TODO
-        String sort;
+        String sort = request.getSort().isBlank() ? "createdAt" : request.getSort();
 
-        // 정렬 기준 확인
-        if (request.getSort() == null) sort = "createdAt";
-        else sort = request.getSort();
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(sort).descending());
+
+        projectRepository.findProjects(pageable, request.getTechStack(), request.getPosition());
 
 
         return null;

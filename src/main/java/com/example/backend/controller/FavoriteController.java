@@ -4,9 +4,7 @@ import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.dto.request.FavoriteRequest;
 import com.example.backend.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +15,11 @@ public class FavoriteController {
     @PostMapping("/projects/favorite")
     public CommonApiResponse<?> projectFavorite(@RequestBody FavoriteRequest request) {
         return new CommonApiResponse<>("success", favoriteService.projectFavorite(request));
+    }
+
+    @DeleteMapping("/projects/favorite/{projectId}")
+    private CommonApiResponse<?> projectFavoriteCancel(@PathVariable Long projectId, @RequestParam Long userId) {
+        return new CommonApiResponse<>("success", favoriteService.projectFavoriteCancel(projectId, userId));
     }
 
 }

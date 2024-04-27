@@ -5,8 +5,10 @@ import com.example.backend.dto.request.FavoriteRequest;
 import com.example.backend.repository.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class FavoriteService {
 
@@ -17,9 +19,21 @@ public class FavoriteService {
         Project project = projectRepository.findByProjectId(request.getProjectId());
 
         project.addProjectLike(request.getUserId());
-        project.updateFavoriteCount();
+        project.updateFavoriteCount(1);
 
         return "Project favorite success";
+
+    }
+
+    public String projectFavoriteCancel(Long projectId, Long userId) {
+
+        Project project = projectRepository.findByProjectId(projectId);
+
+        project.updateFavoriteCount(-1);
+        project.getProjectLike().remove(userId);
+
+        return "Project favorite cancel success";
+
     }
 
 }

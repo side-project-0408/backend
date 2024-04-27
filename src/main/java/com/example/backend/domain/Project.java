@@ -33,6 +33,8 @@ public class Project {
 
     private String recruitment;
 
+    private String position;
+
     @Column(name = "tech_stack")
     private String techStack;
 
@@ -79,8 +81,10 @@ public class Project {
         this.recruits = recruits;
     }
 
-    public void updateFavoriteCount() { this.favoriteCount += 1; }
+    public void updateFavoriteCount(int count) { this.favoriteCount += count; }
 
     public void addProjectLike(Long userId) { this.projectLike.add(userId); }
+
+    public void updatePosition(String position) { this.position = position; }
 
 }

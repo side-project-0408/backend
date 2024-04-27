@@ -29,7 +29,7 @@ public class ProjectResponseDto {
     private Boolean recent;
 
     @QueryProjection
-    public ProjectResponseDto(Long projectId, String nickname, String userFileUrl, String title, String techStack, LocalDate deadline, int viewCount, int favoriteCount, Boolean recent) {
+    public ProjectResponseDto(Long projectId, String nickname, String userFileUrl, String title, String techStack, LocalDate deadline, int viewCount, int favoriteCount) {
         this.projectId = projectId;
         this.nickname = nickname;
         this.userFileUrl = userFileUrl;
@@ -38,6 +38,6 @@ public class ProjectResponseDto {
         this.deadline = deadline;
         this.viewCount = viewCount;
         this.favoriteCount = favoriteCount;
-        this.recent = recent;
     }
+
 }
