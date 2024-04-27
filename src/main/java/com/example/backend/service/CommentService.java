@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @Transactional
@@ -40,7 +39,8 @@ public class CommentService {
     public Slice<CommentResponseDto> getComments(Long projectId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        return commentRepository.findSliceByProject(projectId, pageable);
+
+        return commentRepository.findSliceByProjectId(projectId, pageable);
 
     }
 

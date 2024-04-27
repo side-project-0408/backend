@@ -18,7 +18,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Slice<CommentResponseDto> findSliceByProject(Long projectId, Pageable pageable) {
+    public Slice<CommentResponseDto> findSliceByProjectId(Long projectId, Pageable pageable) {
 
         List<CommentResponseDto> content = queryFactory.select(new QCommentResponseDto(
                         comment.commentId,

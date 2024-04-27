@@ -1,16 +1,13 @@
 package com.example.backend.dto.response.comment;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@ToString
 public class CommentResponseDto {
 
     private Long commentId;
@@ -37,4 +34,5 @@ public class CommentResponseDto {
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
     }
+
 }

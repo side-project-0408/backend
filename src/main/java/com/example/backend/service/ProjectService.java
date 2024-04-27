@@ -67,27 +67,42 @@ public class ProjectService {
         else sort = request.getSort();
 
 
-        return ProjectResponseDto.builder().build();
+        return null;
     }
 
     public ProjectDetailResponseDto findProjectDetail(Long projectId) {
         //TODO
-        return ProjectDetailResponseDto.builder().build();
+        return null;
     }
 
     public ProjectResponseDto findHotProjects() {
         //TODO
-        return ProjectResponseDto.builder().build();
+        return null;
     }
 
-    public String projectFavorite(Long projectId, Long userId) {
+    public ProjectDetailResponseDto findProject(Long projectId) {
+        List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
 
-        Project project = projectRepository.findByProjectId(projectId);
+        return ProjectDetailResponseDto.builder()
+                .projectId(content.get(0).getProjectId())
+                .userId(content.get(0).getUserId())
+                .nickname(content.get(0).getNickname())
+                .userFileUrl(content.get(0).getUserFileUrl())
+                .projectFileUrl(content.get(0).getProjectFileUrl())
+                .title(content.get(0).getTitle())
+                .techStack(content.get(0).getTechStack())
+                .softSkill(content.get(0).getSoftSkill())
+                .importantQuestion(content.get(0).getImportantQuestion())
+                .deadline(content.get(0).getDeadline())
+                .recruitment(content.get(0).getRecruitment())
+                .employmentStatus(content.get(0).getEmploymentStatus())
+                .viewCount(content.get(0).getViewCount())
+                .favoriteCount(content.get(0).getFavoriteCount())
+                .description(content.get(0).getDescription())
+                .createdAt(content.get(0).getCreatedAt())
+                .lastModifiedAt(content.get(0).getLastModifiedAt())
+                .recruit(content.get(0).getRecruit())
+                .build();
 
-        project.addProjectLike(userId);
-        project.updateFavoriteCount();
-
-        return "Project favorite success";
     }
-
 }

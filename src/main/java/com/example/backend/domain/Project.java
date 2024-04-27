@@ -33,8 +33,6 @@ public class Project {
 
     private String recruitment;
 
-    private String position;
-
     @Column(name = "tech_stack")
     private String techStack;
 
