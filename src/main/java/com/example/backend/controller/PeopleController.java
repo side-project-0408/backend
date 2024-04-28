@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.domain.User;
+import com.example.backend.dto.request.people.HotSearchDto;
 import com.example.backend.dto.request.people.PeopleSearchDto;
 import com.example.backend.dto.response.people.PeopleDetailResponseDto;
 import com.example.backend.dto.response.people.PeopleResponseDto;
@@ -36,12 +37,8 @@ public class PeopleController {
         return new CommonApiResponse<>("success", dto);
     }
 
-
-
     @GetMapping("/peoples/hot")
-    public CommonApiResponse<?> getHotPeoples() {
-
-
-        return new CommonApiResponse<>("success", null);
+    public CommonApiResponse<List<PeopleResponseDto>> getHotPeoples(@ModelAttribute HotSearchDto dto) {
+        return new CommonApiResponse<>("success", peopleRepository.findHotPeoples(dto));
     }
 }
