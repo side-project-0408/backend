@@ -1,7 +1,9 @@
 package com.example.backend.dto.response.people;
 
 import com.example.backend.domain.User;
+import lombok.Getter;
 
+@Getter
 public class PeopleDetailResponseDto {
 
     private Long userId;

@@ -41,4 +41,12 @@ public class PeopleController {
     public CommonApiResponse<List<PeopleResponseDto>> getHotPeoples(@ModelAttribute HotSearchDto dto) {
         return new CommonApiResponse<>("success", peopleRepository.findHotPeoples(dto));
     }
+
+    /**
+     * 카카오톡 제안 보내기 (로그인 한 사람 정보 어떻게 받아올지 고민하기)
+     */
+    @PostMapping("/proposal/send")
+    public CommonApiResponse<?> sendProposal() {
+        return new CommonApiResponse<>("success", "제안 신청이 성공하였습니다.");
+    }
 }
