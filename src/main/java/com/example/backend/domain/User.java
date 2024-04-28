@@ -38,7 +38,7 @@ public class User {
     private String userFileUrl;
 
     @Column(name = "employment_status")
-    private String employmentStatus;
+    private boolean employmentStatus;
 
     @Column(name = "tech_stack")
     private String techStack;

@@ -42,6 +42,12 @@ public class PeopleController {
         return new CommonApiResponse<>("success", peopleRepository.findHotPeoples(dto));
     }
 
+    @GetMapping("/users/favorite/{userId}")
+    public CommonApiResponse<List<PeopleResponseDto>> getFavoritePeoples(@PathVariable("peopleId") Long peopleId) {
+
+        return new CommonApiResponse<>("success", null);
+    }
+
     /**
      * 카카오톡 제안 보내기 (로그인 한 사람 정보 어떻게 받아올지 고민하기)
      */
