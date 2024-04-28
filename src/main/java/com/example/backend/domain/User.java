@@ -17,10 +17,10 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @Builder
+@Table(name = "user")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
@@ -81,9 +81,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Project> projects = new ArrayList<>();
 
-    public User(Long userId, String nickname, String position, String userFileUrl, String techStack,
+    public User(String nickname, String position, String userFileUrl, String techStack,
                 int viewCount, int favoriteCount, LocalDateTime createdAt) {
-        this.userId = userId;
         this.nickname = nickname;
         this.position = position;
         this.userFileUrl = userFileUrl;
