@@ -2,12 +2,10 @@ package com.example.backend.service;
 
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateRequestDto;
-import com.example.backend.repository.PeopleRepository;
+import com.example.backend.repository.people.PeopleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +16,6 @@ public class PeopleService {
     public String update(Long userId, UpdateRequestDto dto) {
         User user = peopleRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("해당 사용자는 존재하지 않습니다."));
-
-
-
-
-
-
 
         return "수정이 완료되었습니다.";
     }

@@ -1,10 +1,7 @@
 package com.example.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +14,7 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @Builder
+@Data
 @Table(name = "user")
 public class User {
 

@@ -1,4 +1,4 @@
-package com.example.backend.repository;
+package com.example.backend.repository.people;
 
 import com.example.backend.dto.request.people.HotSearchDto;
 import com.example.backend.dto.request.people.PeopleSearchDto;
