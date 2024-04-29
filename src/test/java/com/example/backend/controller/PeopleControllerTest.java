@@ -1,7 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.domain.User;
-import com.example.backend.repository.PeopleRepository;
+import com.example.backend.repository.people.PeopleRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

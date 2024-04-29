@@ -5,8 +5,8 @@ import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateRequestDto;
 import com.example.backend.dto.response.people.PeopleDetailResponseDto;
-import com.example.backend.repository.PeopleRepository;
-import com.example.backend.repository.ProjectRepository;
+import com.example.backend.repository.people.PeopleRepository;
+import com.example.backend.repository.project.ProjectRepository;
 import com.example.backend.service.PeopleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -45,14 +45,17 @@ public class MyPageController {
     }
 
     //내가 작성한 프로젝트 삭제
-    @DeleteMapping("/posts/{userId}")
+    @DeleteMapping("/posts/{userId}/{projectId}")
     public CommonApiResponse<?> deletePost(@PathVariable("userId") Long userId,
-                                         @PathVariable("projectId") Long projectId) {
+                                           @PathVariable("projectId") Long projectId) {
 
-        Project project = projectRepository.findByUserIdAndProjectId(userId, projectId)
-                .orElseThrow(() -> new RuntimeException("프로젝트를 찾을 수 없습니다."));
+        Project project = projectRepository.findByUserUserIdAndProjectId(userId, projectId);
+        if(project == null) {
+            throw new RuntimeException("해당 프로젝트는 존재하지 않습니다.");
+        }
         projectRepository.delete(project);
 
-        return new CommonApiResponse<>("success", "삭제되었습니다.");
+        return new CommonApiResponse<>("success", "프로젝트가 삭제되었습니다.");
     }
+
 }

@@ -77,14 +77,12 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private List<Recruit> recruits = new ArrayList<>();
 
-    public void updateRecruit(List<Recruit> recruits) {
-        this.recruits = recruits;
-    }
+    public void updateRecruit(List<Recruit> recruits) {this.recruits = recruits;}
 
-    public void updateFavoriteCount(int count) { this.favoriteCount += count; }
+    public void updateFavoriteCount(int count) {this.favoriteCount += count;}
 
-    public void addProjectLike(Long userId) { this.projectLike.add(userId); }
+    public void addProjectLike(Long userId) {this.projectLike.add(userId);}
 
-    public void updatePosition(String position) { this.position = position; }
+    public void updatePosition(String position) {this.position = position;}
 
 }

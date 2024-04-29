@@ -1,10 +1,7 @@
 package com.example.backend.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +14,7 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @Builder
+@Data
 @Table(name = "user")
 public class User {
 
@@ -75,7 +73,7 @@ public class User {
     @ElementCollection
     @CollectionTable(name = "userLike", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "favorite_id")
-    private Set<Integer> userLike = new HashSet<>();
+    private Set<Long> userLike = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "user")
@@ -91,4 +89,8 @@ public class User {
         this.favoriteCount = favoriteCount;
         this.createdAt = createdAt;
     }
+
+    public void updateFavoriteCount(int count) {this.favoriteCount += count;}
+
+    public void addProjectLike(Long userId) {this.userLike.add(userId);}
 }
