@@ -9,4 +9,6 @@ public class FavoriteRequest {
 
     private Long userId;
 
+    private Long favoriteId;
+
 }

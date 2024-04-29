@@ -26,6 +26,7 @@ import java.util.List;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+
     public String postProject(ProjectRequestDto request) {
 
         List<Recruit> recruits = new ArrayList<>();

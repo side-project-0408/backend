@@ -57,4 +57,5 @@ public class MyPageController {
 
         return new CommonApiResponse<>("success", "프로젝트가 삭제되었습니다.");
     }
+
 }

@@ -89,4 +89,8 @@ public class User {
         this.favoriteCount = favoriteCount;
         this.createdAt = createdAt;
     }
+
+    public void updateFavoriteCount(int count) {this.favoriteCount += count;}
+
+    public void addProjectLike(Long userId) {this.userLike.add(userId);}
 }
