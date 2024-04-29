@@ -4,18 +4,25 @@ import com.example.backend.domain.Project;
 import com.example.backend.domain.Recruit;
 import com.example.backend.domain.User;
 import com.example.backend.repository.project.ProjectRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class MyPageControllerTest {
+
+    @Autowired
+    private EntityManager em;
 
     @Autowired
     private ProjectRepository projectRepository;
@@ -25,9 +32,11 @@ class MyPageControllerTest {
         List<Recruit> recruits = new ArrayList<>();
         recruits.add(Recruit.builder().position("backend").currentCount(2).targetCount(3).build());
         recruits.add(Recruit.builder().position("frontend").currentCount(4).targetCount(5).build());
-        User user = User.builder().nickname("AAA").build();
+        User userA = new User("aaa", "backend", "pictures/userPicture.jpg",
+                "java, spring, nodejs", 100, 300, LocalDateTime.now());
+
         Project project = Project.builder()
-                .user(user)
+                .user(userA)
                 .title("제목")
                 .projectFileUrl("user.jpg")
                 .deadline(LocalDate.now())
@@ -37,9 +46,16 @@ class MyPageControllerTest {
                 .recruits(recruits)
                 .build();
 
-        Project result = projectRepository.save(project);
+        projectRepository.save(project);
 
+        Project findProject = projectRepository.findByProjectId(project.getProjectId());
 
-        assertThat(project.getProjectId()).isEqualTo(1);
+        Project result = projectRepository.findByUserUserIdAndProjectId(findProject.getUser().getUserId(), findProject.getProjectId());
+        if(project == null) {
+            throw new RuntimeException("해당 프로젝트는 존재하지 않습니다.");
+        }
+        projectRepository.delete(result);
+
+        assertThat(result.getProjectId()).isEqualTo(4);
     }
 }

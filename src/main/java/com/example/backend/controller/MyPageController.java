@@ -4,6 +4,7 @@ import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateRequestDto;
+import com.example.backend.dto.request.project.UpdateProjectRequestDto;
 import com.example.backend.dto.response.people.PeopleDetailResponseDto;
 import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.repository.project.ProjectRepository;
@@ -37,9 +38,12 @@ public class MyPageController {
     }
 
     //내가 작성한 프로젝트 수정
-    @PatchMapping("/posts/{userId}")
+    @PatchMapping("/posts/{userId}/{projectId}")
     public CommonApiResponse<?> editPost(@PathVariable("userId") Long userId,
-                                         @PathVariable("projectId") Long projectId) {
+                                         @PathVariable("projectId") Long projectId,
+                                         @RequestBody UpdateProjectRequestDto dto) {
+
+
 
         return new CommonApiResponse<>("success", null);
     }
