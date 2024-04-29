@@ -12,4 +12,8 @@ public interface ProjectRepositoryCustom {
 
     List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position);
 
+    List<ProjectResponseDto> findHotProjects(int size);
+
+    List<ProjectResponseDto> findFavoriteProjects(Long userId, Pageable pageable);
+
 }

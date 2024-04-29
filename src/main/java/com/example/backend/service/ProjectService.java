@@ -65,29 +65,22 @@ public class ProjectService {
 
     }
 
-    public ProjectResponseDto findProjects(ProjectSearchDto request) {
+    public List<ProjectResponseDto> findProjects(ProjectSearchDto request) {
 
-        String sort = request.getSort().isBlank() ? "createdAt" : request.getSort();
+        String sort = request.getSort() == null ? "createdAt" : request.getSort();
 
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(sort).descending());
 
-        projectRepository.findProjects(pageable, request.getTechStack(), request.getPosition());
+        return checkRecent(projectRepository.findProjects(pageable, request.getTechStack(), request.getPosition()));
 
-
-        return null;
     }
 
-    public ProjectDetailResponseDto findProjectDetail(Long projectId) {
-        //TODO
-        return null;
-    }
-
-    public ProjectResponseDto findHotProjects() {
-        //TODO
-        return null;
+    public List<ProjectResponseDto> findHotProjects(int size) {
+        return checkRecent(projectRepository.findHotProjects(size));
     }
 
     public ProjectDetailResponseDto findProject(Long projectId) {
+
         List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
 
         return ProjectDetailResponseDto.builder()
@@ -112,4 +105,24 @@ public class ProjectService {
                 .build();
 
     }
+
+    public List<ProjectResponseDto> findFavoriteProjects(Long userId, ProjectSearchDto request) {
+
+        String sort = request.getSort() == null ? "createdAt" : request.getSort();
+
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(sort).descending());
+
+        return checkRecent(projectRepository.findFavoriteProjects(userId, pageable));
+
+    }
+
+    // 신규 스티커 여부 (생성한 후 1주일)
+    public List<ProjectResponseDto> checkRecent(List<ProjectResponseDto> projects){
+        for (ProjectResponseDto project : projects) {
+            boolean recent = project.getCreatedAt().isBefore(LocalDateTime.now().plusWeeks(1)) ? true : false;
+            project.setRecent(recent);
+        }
+        return projects;
+    }
+
 }

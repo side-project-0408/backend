@@ -20,6 +20,7 @@ public class ProjectController {
 
     @GetMapping("/projects")
     public CommonApiResponse<?> getProjects(@ModelAttribute ProjectSearchDto request) {
+        System.out.println(request.toString());
         return new CommonApiResponse<>("success", projectService.findProjects(request));
     }
 
@@ -29,8 +30,8 @@ public class ProjectController {
     }
 
     @GetMapping("/projects/hot")
-    public CommonApiResponse<?> getHotProjects() {
-        return new CommonApiResponse<>("success", projectService.findHotProjects());
+    public CommonApiResponse<?> getHotProjects(@RequestParam int size) {
+        return new CommonApiResponse<>("success", projectService.findHotProjects(size));
     }
 
 }

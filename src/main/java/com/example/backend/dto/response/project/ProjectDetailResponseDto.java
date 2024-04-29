@@ -36,7 +36,7 @@ public class ProjectDetailResponseDto {
 
     private String recruitment;
 
-    private String employmentStatus;
+    private Boolean employmentStatus;
 
     private int viewCount;
 

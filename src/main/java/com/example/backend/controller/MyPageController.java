@@ -4,10 +4,12 @@ import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateRequestDto;
+import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.response.people.PeopleDetailResponseDto;
 import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.repository.project.ProjectRepository;
 import com.example.backend.service.PeopleService;
+import com.example.backend.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,8 @@ public class MyPageController {
     private final PeopleRepository peopleRepository;
     private final PeopleService peopleService;
     private final ProjectRepository projectRepository;
+
+    private final ProjectService projectService;
 
     //마이페이지 내 정보 조회
     @GetMapping("/users/{userId}")
@@ -56,6 +60,11 @@ public class MyPageController {
         projectRepository.delete(project);
 
         return new CommonApiResponse<>("success", "프로젝트가 삭제되었습니다.");
+    }
+
+    @GetMapping("/projects/favorite/{userId}")
+    public CommonApiResponse<?> getFavoriteProjects(@PathVariable Long userId, @ModelAttribute ProjectSearchDto request) {
+        return new CommonApiResponse<>("success", projectService.findFavoriteProjects(userId, request));
     }
 
 }

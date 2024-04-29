@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FavoriteService {
 
     private final ProjectRepository projectRepository;
+
     private final PeopleRepository peopleRepository;
 
     public String projectFavorite(FavoriteRequest request) {
@@ -38,10 +39,10 @@ public class FavoriteService {
         return "Project favorite cancel success";
 
     }
-/*
+
     public String userFavorite(FavoriteRequest request) {
 
-        User user = peopleRepository.findUserById(request.getFavoriteId());
+        User user = peopleRepository.findUserByUserId(request.getFavoriteId());
 
         user.addProjectLike(request.getUserId());
         user.updateFavoriteCount(1);
@@ -52,7 +53,7 @@ public class FavoriteService {
 
     public String userFavoriteCancel(Long favoriteId, Long userId) {
 
-        User user = peopleRepository.findUserById(favoriteId);
+        User user = peopleRepository.findUserByUserId(favoriteId);
 
         user.updateFavoriteCount(-1);
         user.getUserLike().remove(userId);
@@ -60,7 +61,5 @@ public class FavoriteService {
         return "User favorite cancel success";
 
     }
-
- */
 
 }

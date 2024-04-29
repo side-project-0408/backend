@@ -23,7 +23,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     private BooleanExpression eqTechStack(String techStackCsv) {
-        if (techStackCsv.isBlank()) return null;
+        if (techStackCsv == null) return null;
         String[] split = techStackCsv.split(", ");
         BooleanExpression condition = null;
         for (String stack : split) {
@@ -34,7 +34,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     }
 
     private BooleanExpression eqPosition(String positionCsv) {
-        if (positionCsv.isBlank()) return null;
+        if (positionCsv == null) return null;
         String[] split = positionCsv.split(", ");
         BooleanExpression condition = null;
         for (String position : split) {
@@ -47,28 +47,72 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     @Override
     public List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position) {
 
-        List<ProjectResponseDto> result = queryFactory
+        return queryFactory
                 .select(new QProjectResponseDto(
                         project.projectId,
                         project.user.nickname,
                         project.user.userFileUrl,
                         project.title,
                         project.techStack,
+                        project.position,
                         project.deadline,
                         project.viewCount,
-                        project.favoriteCount))
+                        project.favoriteCount,
+                        project.createdAt))
                 .from(project)
                 .where(eqTechStack(techStack),
                         eqPosition(position))
-                .orderBy()//TODO Pageable Sort 타입 바꾸기
+                .orderBy(project.createdAt.desc())//TODO Pageable Sort 타입 바꾸기
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
+    }
 
+    @Override
+    public List<ProjectResponseDto> findHotProjects(int size) {
 
+        return queryFactory
+                .select(new QProjectResponseDto(
+                        project.projectId,
+                        project.user.nickname,
+                        project.user.userFileUrl,
+                        project.title,
+                        project.techStack,
+                        project.position,
+                        project.deadline,
+                        project.viewCount,
+                        project.favoriteCount,
+                        project.createdAt))
+                .from(project)
+                .orderBy(project.favoriteCount.desc())//TODO 인기 순위 조건 생각하기
+                .limit(size)
+                .fetch();
 
-        return null;
+    }
+
+    @Override
+    public List<ProjectResponseDto> findFavoriteProjects(Long userId, Pageable pageable) {
+
+        return queryFactory
+                .select(new QProjectResponseDto(
+                        project.projectId,
+                        project.user.nickname,
+                        project.user.userFileUrl,
+                        project.title,
+                        project.techStack,
+                        project.position,
+                        project.deadline,
+                        project.viewCount,
+                        project.favoriteCount,
+                        project.createdAt))
+                .from(project)
+                .where(project.projectLike.contains(userId))
+                .orderBy(project.createdAt.desc())//TODO Pageable Sort 타입 바꾸기
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
     }
 
     @Override
@@ -102,5 +146,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                                 recruit.targetCount)))));
 
     }
+
+
 
 }
