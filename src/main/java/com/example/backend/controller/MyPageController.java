@@ -8,7 +8,6 @@ import com.example.backend.dto.response.people.PeopleDetailResponseDto;
 import com.example.backend.repository.PeopleRepository;
 import com.example.backend.repository.ProjectRepository;
 import com.example.backend.service.PeopleService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
