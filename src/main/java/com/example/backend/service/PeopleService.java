@@ -16,8 +16,10 @@ public class PeopleService {
 
     private final PeopleRepository peopleRepository;
     public String update(Long userId, UpdateRequestDto dto) {
-        Optional<User> user = Optional.ofNullable(peopleRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("해당 사용자는 존재하지 않습니다.")));
+        User user = peopleRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("해당 사용자는 존재하지 않습니다."));
+
+
 
 
 
