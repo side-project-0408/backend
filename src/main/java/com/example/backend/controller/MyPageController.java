@@ -34,8 +34,6 @@ public class MyPageController {
     @PatchMapping("/users/{userId}")
     public CommonApiResponse<?> editUser(@PathVariable("userId") Long userId, @RequestBody UpdateRequestDto dto) {
 
-
-
         return new CommonApiResponse<>("success", peopleService.update(userId, dto));
     }
 
