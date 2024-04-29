@@ -21,5 +21,17 @@ public class FavoriteController {
     private CommonApiResponse<?> projectFavoriteCancel(@PathVariable Long projectId, @RequestParam Long userId) {
         return new CommonApiResponse<>("success", favoriteService.projectFavoriteCancel(projectId, userId));
     }
+/*
+    @PostMapping("/users/favorite")
+    public CommonApiResponse<?> userFavorite(@RequestBody FavoriteRequest request) {
+        return new CommonApiResponse<>("success", favoriteService.userFavorite(request));
+    }
+
+    @DeleteMapping("/users/favorite/{favoriteId}")
+    private CommonApiResponse<?> userFavoriteCancel(@PathVariable Long favoriteId, @RequestParam Long userId) {
+        return new CommonApiResponse<>("success", favoriteService.userFavoriteCancel(favoriteId, userId));
+    }
+
+ */
 
 }

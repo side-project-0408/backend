@@ -6,7 +6,7 @@ import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateRequestDto;
 import com.example.backend.dto.response.people.PeopleDetailResponseDto;
 import com.example.backend.repository.PeopleRepository;
-import com.example.backend.repository.ProjectRepository;
+import com.example.backend.repository.project.ProjectRepository;
 import com.example.backend.service.PeopleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +43,7 @@ public class MyPageController {
 
         return new CommonApiResponse<>("success", null);
     }
-
+/*
     //내가 작성한 프로젝트 삭제
     @DeleteMapping("/posts/{userId}")
     public CommonApiResponse<?> deletePost(@PathVariable("userId") Long userId,
@@ -55,4 +55,6 @@ public class MyPageController {
 
         return new CommonApiResponse<>("success", "삭제되었습니다.");
     }
+
+ */
 }

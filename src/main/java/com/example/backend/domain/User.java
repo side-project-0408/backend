@@ -75,7 +75,7 @@ public class User {
     @ElementCollection
     @CollectionTable(name = "userLike", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "favorite_id")
-    private Set<Integer> userLike = new HashSet<>();
+    private Set<Long> userLike = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "user")
@@ -91,4 +91,8 @@ public class User {
         this.favoriteCount = favoriteCount;
         this.createdAt = createdAt;
     }
+
+    public void updateFavoriteCount(int count) {this.favoriteCount += count;}
+
+    public void addProjectLike(Long userId) {this.userLike.add(userId);}
 }
