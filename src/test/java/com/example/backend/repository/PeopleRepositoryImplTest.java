@@ -28,10 +28,10 @@ class PeopleRepositoryImplTest {
     @Test
     void findPeoples() {
 
-        User userA = new User(1L, "aaa", "backend", "pictures/userPicture.jpg",
+        User userA = new User("aaa", "backend", "pictures/userPicture.jpg",
                 "java, spring, nodejs", 100, 300, LocalDateTime.now());
 
-        User userB = new User(2L, "bbb", "frontend", "pictures/userPicture.jpg",
+        User userB = new User("bbb", "frontend", "pictures/userPicture.jpg",
                 "javascript, nextJs", 200, 600, LocalDateTime.now().minusDays(1));
 
         peopleRepository.save(userA);

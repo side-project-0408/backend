@@ -1,11 +1,13 @@
 package com.example.backend.dto.response.project;
 
-import com.example.backend.dto.request.project.RecruitRequestDto;
-import lombok.Builder;
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Builder
+@Getter
+@Setter
 public class ProjectResponseDto {
 
     private Long projectId;
@@ -26,6 +28,16 @@ public class ProjectResponseDto {
 
     private Boolean recent;
 
-    private RecruitRequestDto recruit;
+    @QueryProjection
+    public ProjectResponseDto(Long projectId, String nickname, String userFileUrl, String title, String techStack, LocalDate deadline, int viewCount, int favoriteCount) {
+        this.projectId = projectId;
+        this.nickname = nickname;
+        this.userFileUrl = userFileUrl;
+        this.title = title;
+        this.techStack = techStack;
+        this.deadline = deadline;
+        this.viewCount = viewCount;
+        this.favoriteCount = favoriteCount;
+    }
 
 }

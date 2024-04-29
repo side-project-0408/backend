@@ -42,7 +42,7 @@ public class QProject extends EntityPathBase<Project> {
 
     public final NumberPath<Long> projectId = createNumber("projectId", Long.class);
 
-    public final SetPath<Integer, NumberPath<Integer>> projectLike = this.<Integer, NumberPath<Integer>>createSet("projectLike", Integer.class, NumberPath.class, PathInits.DIRECT2);
+    public final SetPath<Long, NumberPath<Long>> projectLike = this.<Long, NumberPath<Long>>createSet("projectLike", Long.class, NumberPath.class, PathInits.DIRECT2);
 
     public final StringPath recruitment = createString("recruitment");
 

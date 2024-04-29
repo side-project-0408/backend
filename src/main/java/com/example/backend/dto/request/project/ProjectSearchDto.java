@@ -9,10 +9,10 @@ public class ProjectSearchDto {
 
     private int size;
 
-    private String sort;
-
     private String techStack;
 
     private String position;
+
+    private String sort;
 
 }

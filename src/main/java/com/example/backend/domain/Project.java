@@ -63,7 +63,7 @@ public class Project {
     @ElementCollection
     @CollectionTable(name = "projectLike", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "user_id")
-    private Set<Integer> projectLike = new HashSet<>();
+    private Set<Long> projectLike = new HashSet<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "created_id")
@@ -80,5 +80,11 @@ public class Project {
     public void updateRecruit(List<Recruit> recruits) {
         this.recruits = recruits;
     }
+
+    public void updateFavoriteCount(int count) { this.favoriteCount += count; }
+
+    public void addProjectLike(Long userId) { this.projectLike.add(userId); }
+
+    public void updatePosition(String position) { this.position = position; }
 
 }
