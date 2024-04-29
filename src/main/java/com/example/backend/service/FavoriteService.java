@@ -2,7 +2,7 @@ package com.example.backend.service;
 
 import com.example.backend.domain.Project;
 import com.example.backend.dto.request.FavoriteRequest;
-import com.example.backend.repository.ProjectRepository;
+import com.example.backend.repository.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

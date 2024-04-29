@@ -54,7 +54,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Long> userId = createNumber("userId", Long.class);
 
-    public final SetPath<Integer, NumberPath<Integer>> userLike = this.<Integer, NumberPath<Integer>>createSet("userLike", Integer.class, NumberPath.class, PathInits.DIRECT2);
+    public final SetPath<Long, NumberPath<Long>> userLike = this.<Long, NumberPath<Long>>createSet("userLike", Long.class, NumberPath.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> viewCount = createNumber("viewCount", Integer.class);
 

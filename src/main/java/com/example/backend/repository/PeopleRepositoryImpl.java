@@ -7,6 +7,8 @@ import com.example.backend.dto.response.people.QPeopleResponseDto;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -57,6 +59,25 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                 .orderBy(user.viewCount.desc())
                 .offset(dto.getPage())
                 .limit(10)
+                .fetch();
+        return result;
+    }
+
+    //내가 찜한 사람 목록
+    @Override
+    public List<PeopleResponseDto> findFavoritePeoples(Long peopleId, Pageable pageable) {
+        List<PeopleResponseDto> result = queryFactory
+                .select(new QPeopleResponseDto(
+                        user.nickname,
+                        user.favoriteCount,
+                        user.viewCount,
+                        user.position,
+                        user.userFileUrl))
+                .from(user)
+                .where(user.userLike.contains(peopleId))
+                .orderBy(user.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
         return result;
     }
