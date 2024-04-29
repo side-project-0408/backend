@@ -11,9 +11,15 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     private final CommentService commentService;
+
     @PostMapping("/comments/{projectId}")
     public CommonApiResponse<?> postComment(@PathVariable Long projectId, @RequestBody CommentRequestDto request) {
         return new CommonApiResponse<>("success", commentService.postComment(projectId, request));
+    }
+
+    @GetMapping("/comments/{projectId}")
+    public CommonApiResponse<?> getComments(@PathVariable Long projectId, @RequestParam int page, @RequestParam int size) {
+        return new CommonApiResponse<>("success", commentService.getComments(projectId, page, size));
     }
 
     @PatchMapping("/comments/{projectId}")

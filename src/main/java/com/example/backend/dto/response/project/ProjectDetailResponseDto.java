@@ -1,11 +1,17 @@
 package com.example.backend.dto.response.project;
 
 import com.example.backend.dto.request.project.RecruitRequestDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Getter
 @Builder
+@AllArgsConstructor
 public class ProjectDetailResponseDto {
 
     private Long projectId;
@@ -26,11 +32,11 @@ public class ProjectDetailResponseDto {
 
     private String importantQuestion;
 
-    private String deadline;
+    private LocalDate deadline;
 
     private String recruitment;
 
-    private Boolean imploymentStatus;
+    private String employmentStatus;
 
     private int viewCount;
 
@@ -42,6 +48,6 @@ public class ProjectDetailResponseDto {
 
     private LocalDateTime lastModifiedAt;
 
-    private RecruitRequestDto recruit;
+    private List<RecruitRequestDto> recruit;
 
 }

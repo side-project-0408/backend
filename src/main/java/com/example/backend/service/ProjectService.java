@@ -8,7 +8,7 @@ import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.request.project.RecruitRequestDto;
 import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
-import com.example.backend.repository.ProjectRepository;
+import com.example.backend.repository.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +30,8 @@ public class ProjectService {
 
         List<Recruit> recruits = new ArrayList<>();
 
+        String position = "";
+
         Project project = Project.builder().user(User.builder().userId(request.getCreatedId()).build())
                 .title(request.getTitle())
                 .projectFileUrl(request.getProjectFileUrl())
@@ -50,8 +52,10 @@ public class ProjectService {
                     .currentCount(recruitDto.getCurrentCount())
                     .targetCount(recruitDto.getTargetCount())
                     .build());
+            position += recruitDto.getPosition() + ", ";
         }
 
+        project.updatePosition(position.substring(0, position.length() - 2));
         project.updateRecruit(recruits);
 
         projectRepository.save(project);
@@ -62,35 +66,49 @@ public class ProjectService {
 
     public ProjectResponseDto findProjects(ProjectSearchDto request) {
 
-        //TODO
-        String sort;
+        String sort = request.getSort().isBlank() ? "createdAt" : request.getSort();
 
-        // 정렬 기준 확인
-        if (request.getSort() == null) sort = "createdAt";
-        else sort = request.getSort();
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(sort).descending());
 
-        // 페이징
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(),
-                Sort.by(request.getSort()).descending());
+        projectRepository.findProjects(pageable, request.getTechStack(), request.getPosition());
 
 
-
-
-
-
-        return ProjectResponseDto.builder().build();
+        return null;
     }
 
     public ProjectDetailResponseDto findProjectDetail(Long projectId) {
         //TODO
-        return ProjectDetailResponseDto.builder().build();
+        return null;
     }
 
     public ProjectResponseDto findHotProjects() {
         //TODO
-        return ProjectResponseDto.builder().build();
+        return null;
     }
 
+    public ProjectDetailResponseDto findProject(Long projectId) {
+        List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
 
+        return ProjectDetailResponseDto.builder()
+                .projectId(content.get(0).getProjectId())
+                .userId(content.get(0).getUserId())
+                .nickname(content.get(0).getNickname())
+                .userFileUrl(content.get(0).getUserFileUrl())
+                .projectFileUrl(content.get(0).getProjectFileUrl())
+                .title(content.get(0).getTitle())
+                .techStack(content.get(0).getTechStack())
+                .softSkill(content.get(0).getSoftSkill())
+                .importantQuestion(content.get(0).getImportantQuestion())
+                .deadline(content.get(0).getDeadline())
+                .recruitment(content.get(0).getRecruitment())
+                .employmentStatus(content.get(0).getEmploymentStatus())
+                .viewCount(content.get(0).getViewCount())
+                .favoriteCount(content.get(0).getFavoriteCount())
+                .description(content.get(0).getDescription())
+                .createdAt(content.get(0).getCreatedAt())
+                .lastModifiedAt(content.get(0).getLastModifiedAt())
+                .recruit(content.get(0).getRecruit())
+                .build();
 
+    }
 }
