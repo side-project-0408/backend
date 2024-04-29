@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.dto.request.people.HotSearchDto;
 import com.example.backend.dto.request.people.PeopleSearchDto;
 import com.example.backend.dto.response.people.PeopleResponseDto;
 import com.example.backend.dto.response.people.QPeopleResponseDto;
@@ -43,10 +44,26 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
         return result;
     }
 
+    @Override
+    public List<PeopleResponseDto> findHotPeoples(HotSearchDto dto) {
+        List<PeopleResponseDto> result = queryFactory
+                .select(new QPeopleResponseDto(
+                        user.nickname,
+                        user.favoriteCount,
+                        user.viewCount,
+                        user.position,
+                        user.userFileUrl))
+                .from(user)
+                .orderBy(user.viewCount.desc())
+                .offset(dto.getPage())
+                .limit(10)
+                .fetch();
+        return result;
+    }
+
     private BooleanExpression nicknameEq(String nickname) {
         return hasText(nickname) ? user.nickname.eq(nickname) : null;
     }
-
 
     /**
      * 수정 필요
