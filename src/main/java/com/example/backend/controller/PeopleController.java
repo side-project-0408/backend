@@ -6,13 +6,14 @@ import com.example.backend.dto.request.people.HotSearchDto;
 import com.example.backend.dto.request.people.PeopleSearchDto;
 import com.example.backend.dto.response.people.PeopleDetailResponseDto;
 import com.example.backend.dto.response.people.PeopleResponseDto;
-import com.example.backend.repository.PeopleRepository;
-import com.example.backend.service.PeopleService;
+import com.example.backend.repository.people.PeopleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,9 +44,9 @@ public class PeopleController {
     }
 
     @GetMapping("/users/favorite/{userId}")
-    public CommonApiResponse<List<PeopleResponseDto>> getFavoritePeoples(@PathVariable("peopleId") Long peopleId) {
-
-        return new CommonApiResponse<>("success", null);
+    public CommonApiResponse<List<PeopleResponseDto>> getFavoritePeoples(@PathVariable("peopleId") Long peopleId,
+                                                                         @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
+        return new CommonApiResponse<>("success", peopleRepository.findFavoritePeoples(peopleId, pageable));
     }
 
     /**

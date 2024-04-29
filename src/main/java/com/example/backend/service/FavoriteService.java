@@ -3,7 +3,7 @@ package com.example.backend.service;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.FavoriteRequest;
-import com.example.backend.repository.PeopleRepository;
+import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.repository.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
