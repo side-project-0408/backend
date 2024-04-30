@@ -1,8 +1,9 @@
 package com.example.backend.dto.request.people;
 
+import lombok.Data;
 import lombok.Getter;
 
-@Getter
+@Data
 public class UpdateUserRequestDto {
 
     private String nickname;
