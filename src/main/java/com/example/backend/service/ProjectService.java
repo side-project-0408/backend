@@ -125,4 +125,46 @@ public class ProjectService {
         return projects;
     }
 
+    public List<ProjectResponseDto> findMyProjects(Long userId, ProjectSearchDto request) {
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        return checkRecent(projectRepository.findMyProjects(userId, pageable));
+    }
+
+    public String updateProject(Long projectId, ProjectRequestDto request) {
+
+        Project project = projectRepository.findByProjectId(projectId);
+
+        List<Recruit> recruits = project.getRecruits();
+
+        String position = "";
+
+        if (!recruits.isEmpty()) recruits.clear();
+
+        for (RecruitRequestDto recruitDto : request.getRecruit()) {
+
+            recruits.add(Recruit.builder()
+                    .project(project)
+                    .position(recruitDto.getPosition())
+                    .currentCount(recruitDto.getCurrentCount())
+                    .targetCount(recruitDto.getTargetCount())
+                    .build());
+            position += recruitDto.getPosition() + ", ";
+
+        }
+
+        project.updateTitle(request.getTitle());
+        project.updateProjectFileUrl(request.getProjectFileUrl());
+        project.updateDeadline(request.getDeadline());
+        project.updateImportantQuestion(request.getImportantQuestion());
+        project.updateSoftSkill(request.getSoftSkill());
+        project.updateTechStack(request.getTechStack());
+        project.updateDescription(request.getDescription());
+        project.updateRecruit(recruits);
+        project.updatePosition(position.substring(0, position.length() - 2));
+        project.updateLastModifiedAt(LocalDateTime.now());
+
+        return "Update project success";
+
+    }
+
 }

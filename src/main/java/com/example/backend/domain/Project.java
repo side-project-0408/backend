@@ -77,12 +77,30 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private List<Recruit> recruits = new ArrayList<>();
 
-    public void updateRecruit(List<Recruit> recruits) {this.recruits = recruits;}
+    public void updateRecruit(List<Recruit> recruits) {
+        this.recruits = recruits;
+    }
 
     public void updateFavoriteCount(int count) {this.favoriteCount += count;}
 
     public void addProjectLike(Long userId) {this.projectLike.add(userId);}
 
     public void updatePosition(String position) {this.position = position;}
+
+    public void updateTitle(String title) {this.title = title;}
+
+    public void updateProjectFileUrl(String projectFileUrl) {this.projectFileUrl = projectFileUrl;}
+
+    public void updateDeadline(LocalDate deadline) {this.deadline = deadline;}
+
+    public void updateTechStack(String techStack) {this.techStack = techStack;}
+
+    public void updateSoftSkill(String softSkill) {this.softSkill = softSkill;}
+
+    public void updateImportantQuestion(String importantQuestion) {this.importantQuestion = importantQuestion;}
+
+    public void updateDescription(String description) {this.description = description;}
+
+    public void updateLastModifiedAt(LocalDateTime lastModifiedAt) {this.lastModifiedAt = lastModifiedAt;}
 
 }

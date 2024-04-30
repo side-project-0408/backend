@@ -147,6 +147,28 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     }
 
+    @Override
+    public List<ProjectResponseDto> findMyProjects(Long userId, Pageable pageable) {
 
+        return queryFactory
+                .select(new QProjectResponseDto(
+                        project.projectId,
+                        project.user.nickname,
+                        project.user.userFileUrl,
+                        project.title,
+                        project.techStack,
+                        project.position,
+                        project.deadline,
+                        project.viewCount,
+                        project.favoriteCount,
+                        project.createdAt))
+                .from(project)
+                .where(project.user.userId.eq(userId))
+                .orderBy(project.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+    }
 
 }

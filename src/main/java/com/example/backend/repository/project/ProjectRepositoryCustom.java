@@ -16,4 +16,6 @@ public interface ProjectRepositoryCustom {
 
     List<ProjectResponseDto> findFavoriteProjects(Long userId, Pageable pageable);
 
+    List<ProjectResponseDto> findMyProjects(Long userId, Pageable pageable);
+
 }

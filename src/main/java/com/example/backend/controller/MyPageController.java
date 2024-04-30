@@ -4,6 +4,7 @@ import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateRequestDto;
+import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.response.people.PeopleDetailResponseDto;
 import com.example.backend.repository.people.PeopleRepository;
@@ -41,11 +42,9 @@ public class MyPageController {
     }
 
     //내가 작성한 프로젝트 수정
-    @PatchMapping("/posts/{userId}")
-    public CommonApiResponse<?> editPost(@PathVariable("userId") Long userId,
-                                         @PathVariable("projectId") Long projectId) {
-
-        return new CommonApiResponse<>("success", null);
+    @PatchMapping("/posts/{projectId}")
+    public CommonApiResponse<?> updateProject(@PathVariable("projectId") Long projectId, @RequestBody ProjectRequestDto request) {
+        return new CommonApiResponse<>("success", projectService.updateProject(projectId, request));
     }
 
     //내가 작성한 프로젝트 삭제
@@ -62,9 +61,16 @@ public class MyPageController {
         return new CommonApiResponse<>("success", "프로젝트가 삭제되었습니다.");
     }
 
+    //내가 찜한 프로젝트 목록
     @GetMapping("/projects/favorite/{userId}")
     public CommonApiResponse<?> getFavoriteProjects(@PathVariable Long userId, @ModelAttribute ProjectSearchDto request) {
         return new CommonApiResponse<>("success", projectService.findFavoriteProjects(userId, request));
+    }
+
+    //내가 작성한 프로젝트 목록
+    @GetMapping("/posts/{userId}")
+    public CommonApiResponse<?> getMyProjects(@PathVariable Long userId, @ModelAttribute ProjectSearchDto request) {
+        return new CommonApiResponse<>("success", projectService.findMyProjects(userId, request));
     }
 
 }
