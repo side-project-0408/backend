@@ -18,7 +18,8 @@ import java.util.Set;
 @Table(name = "user")
 public class User {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
@@ -90,7 +91,26 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public void updateFavoriteCount(int count) {this.favoriteCount += count;}
+    public void updateFavoriteCount(int count) {
+        this.favoriteCount += count;
+    }
 
-    public void addProjectLike(Long userId) {this.userLike.add(userId);}
+    public void addProjectLike(Long userId) {
+        this.userLike.add(userId);
+    }
+
+    public void updateUser(String nickname, String position, String userFileUrl, boolean employmentStatus, String techStack,
+                String softSkill, String importantQuestion, String year, String links, String content, boolean alarmStatus) {
+        this.nickname = nickname;
+        this.position = position;
+        this.userFileUrl = userFileUrl;
+        this.employmentStatus = employmentStatus;
+        this.techStack = techStack;
+        this.softSkill = softSkill;
+        this.importantQuestion = importantQuestion;
+        this.year = year;
+        this.links = links;
+        this.content = content;
+        this.alarmStatus = alarmStatus;
+    }
 }

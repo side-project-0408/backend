@@ -3,7 +3,7 @@ package com.example.backend.dto.request.people;
 import lombok.Getter;
 
 @Getter
-public class UpdateRequestDto {
+public class UpdateUserRequestDto {
 
     private String nickname;
     private String userFileUrl;

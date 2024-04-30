@@ -1,5 +1,6 @@
 package com.example.backend.domain;
 
+import com.example.backend.dto.request.project.UpdateProjectRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
