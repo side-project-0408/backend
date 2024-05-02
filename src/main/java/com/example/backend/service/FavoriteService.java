@@ -18,6 +18,7 @@ public class FavoriteService {
 
     private final PeopleRepository peopleRepository;
 
+    // 프로젝트 찜하기
     public String projectFavorite(FavoriteRequest request) {
 
         Project project = projectRepository.findByProjectId(request.getProjectId());
@@ -25,10 +26,11 @@ public class FavoriteService {
         project.addProjectLike(request.getUserId());
         project.updateFavoriteCount(1);
 
-        return "Project favorite success";
+        return "프로젝트 찜하기 완료";
 
     }
 
+    // 프로젝트 찜하기 취소
     public String projectFavoriteCancel(Long projectId, Long userId) {
 
         Project project = projectRepository.findByProjectId(projectId);
@@ -36,7 +38,7 @@ public class FavoriteService {
         project.updateFavoriteCount(-1);
         project.getProjectLike().remove(userId);
 
-        return "Project favorite cancel success";
+        return "프로젝트 찜하기 취소 완료";
 
     }
 
@@ -47,7 +49,7 @@ public class FavoriteService {
         user.addProjectLike(request.getUserId());
         user.updateFavoriteCount(1);
 
-        return "User favorite success";
+        return "유저 찜하기 완료";
 
     }
 
@@ -58,7 +60,7 @@ public class FavoriteService {
         user.updateFavoriteCount(-1);
         user.getUserLike().remove(userId);
 
-        return "User favorite cancel success";
+        return "유저 찜하기 취소 완료";
 
     }
 

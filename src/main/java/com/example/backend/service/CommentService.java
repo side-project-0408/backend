@@ -23,6 +23,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
+    // 댓글 저장
     public String postComment(Long projectId, CommentRequestDto request) {
 
         commentRepository.save(Comment.builder()
@@ -32,10 +33,11 @@ public class CommentService {
                 .createdAt(LocalDateTime.now())
                 .build());
 
-        return "Comment creation completed";
+        return "댓글 저장 완료";
 
     }
 
+    // 댓글 목록 가져오기
     public Slice<CommentResponseDto> getComments(Long projectId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
@@ -44,6 +46,7 @@ public class CommentService {
 
     }
 
+    // 댓글 수정
     public String updateComment(Long projectId, CommentRequestDto request) {
 
         Comment comment = commentRepository.findByCommentId(request.getCommentId());
@@ -51,10 +54,11 @@ public class CommentService {
         comment.updateContent(request.getContent());
         comment.updateLastModifiedAt(LocalDateTime.now());
 
-        return "Comment update completed";
+        return "댓글 수정 완료";
 
     }
 
+    // 댓글 삭
     public String deleteComment(Long projectId, Long userId, Long commentId) {
 
         Comment comment = commentRepository.findByCommentId(commentId);
@@ -69,7 +73,7 @@ public class CommentService {
             }
         }
 
-        return "Comment delete completed";
+        return "댓글 삭제 완료";
 
     }
 

@@ -17,6 +17,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    // 댓글 목록 가져오기
     @Override
     public Slice<CommentResponseDto> findSliceByProjectId(Long projectId, Pageable pageable) {
 

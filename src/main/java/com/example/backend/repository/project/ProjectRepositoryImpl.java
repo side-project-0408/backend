@@ -22,34 +22,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    private BooleanExpression eqTechStack(String techStackCsv) {
-        if (techStackCsv == null) return null;
-        String[] split = techStackCsv.split(", ");
-        BooleanExpression condition = null;
-        for (String stack : split) {
-            BooleanExpression stackCondition = project.techStack.contains(stack);
-            condition = (condition == null) ? stackCondition : condition.and(stackCondition);
-        }
-        return condition;
-    }
-
-    private BooleanExpression eqPosition(String positionCsv) {
-        if (positionCsv == null) return null;
-        String[] split = positionCsv.split(", ");
-        BooleanExpression condition = null;
-        for (String position : split) {
-            BooleanExpression positionCondition = project.position.contains(position);
-            condition = (condition == null) ? positionCondition : condition.and(positionCondition);
-        }
-        return condition;
-    }
-
-    private BooleanExpression eqSearchWord(String keword) {
-        if (keword == null) return null;
-        return project.title.contains(keword)
-                .or(project.description.contains(keword));
-    }
-
+    // 프로젝트 목록 가져오기
     @Override
     public List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position, String keyword) {
 
@@ -76,6 +49,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     }
 
+    // 핫 프로젝트 목록 가져오기
     @Override
     public List<ProjectResponseDto> findHotProjects(int size) {
 
@@ -98,6 +72,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     }
 
+    // 내가 찜한 프로젝트 목록 가져오기
     @Override
     public List<ProjectResponseDto> findFavoriteProjects(Long userId, Pageable pageable) {
 
@@ -122,6 +97,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     }
 
+    // 프로젝트 상세 정보 가져오기
     @Override
     public List<ProjectDetailResponseDto> findDetailByProjectId(Long projectId) {
 
@@ -154,6 +130,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     }
 
+    // 내가 작성한 프로젝트 가져오기
     @Override
     public List<ProjectResponseDto> findMyProjects(Long userId, Pageable pageable) {
 
@@ -176,6 +153,37 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
+    }
+
+    // 기술 스택 동적 쿼리
+    private BooleanExpression eqTechStack(String techStackCsv) {
+        if (techStackCsv == null) return null;
+        String[] split = techStackCsv.split(", ");
+        BooleanExpression condition = null;
+        for (String stack : split) {
+            BooleanExpression stackCondition = project.techStack.contains(stack);
+            condition = (condition == null) ? stackCondition : condition.and(stackCondition);
+        }
+        return condition;
+    }
+
+    // 포지션 스택 동적 쿼리
+    private BooleanExpression eqPosition(String positionCsv) {
+        if (positionCsv == null) return null;
+        String[] split = positionCsv.split(", ");
+        BooleanExpression condition = null;
+        for (String position : split) {
+            BooleanExpression positionCondition = project.position.contains(position);
+            condition = (condition == null) ? positionCondition : condition.and(positionCondition);
+        }
+        return condition;
+    }
+
+    // 검색어 동적 쿼리
+    private BooleanExpression eqSearchWord(String keword) {
+        if (keword == null) return null;
+        return project.title.contains(keword)
+                .or(project.description.contains(keword));
     }
 
 }
