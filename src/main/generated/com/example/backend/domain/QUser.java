@@ -32,8 +32,6 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> favoriteCount = createNumber("favoriteCount", Integer.class);
 
-    public final StringPath importantQuestion = createString("importantQuestion");
-
     public final DateTimePath<java.time.LocalDateTime> lastModifiedAt = createDateTime("lastModifiedAt", java.time.LocalDateTime.class);
 
     public final StringPath links = createString("links");
