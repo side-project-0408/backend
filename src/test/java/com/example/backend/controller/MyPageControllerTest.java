@@ -86,7 +86,6 @@ class MyPageControllerTest {
                 true,
                 "java,spring",
                 "시간 약속 잘 지킴",
-                "디자이너 있는 팀",
                 "1",
                 "블로그 링크",
                 "프로젝트 구인 중",

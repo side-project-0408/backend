@@ -23,7 +23,6 @@ public class PeopleService {
                 dto.isEmploymentStatus(),
                 dto.getTechStack(),
                 dto.getSoftSkill(),
-                dto.getImportantQuestion(),
                 dto.getYear(),
                 dto.getLinks(),
                 dto.getContent(),

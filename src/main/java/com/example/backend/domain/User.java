@@ -45,9 +45,6 @@ public class User {
     @Column(name = "soft_skill")
     private String softSkill;
 
-    @Column(name = "important_question")
-    private String importantQuestion;
-
     private String year;
 
     private String links;
@@ -100,14 +97,13 @@ public class User {
     }
 
     public void updateUser(String nickname, String position, String userFileUrl, boolean employmentStatus, String techStack,
-                String softSkill, String importantQuestion, String year, String links, String content, boolean alarmStatus) {
+                String softSkill, String year, String links, String content, boolean alarmStatus) {
         this.nickname = nickname;
         this.position = position;
         this.userFileUrl = userFileUrl;
         this.employmentStatus = employmentStatus;
         this.techStack = techStack;
         this.softSkill = softSkill;
-        this.importantQuestion = importantQuestion;
         this.year = year;
         this.links = links;
         this.content = content;
