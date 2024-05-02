@@ -71,7 +71,7 @@ public class ProjectService {
 
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(sort).descending());
 
-        return checkRecent(projectRepository.findProjects(pageable, request.getTechStack(), request.getPosition()));
+        return checkRecent(projectRepository.findProjects(pageable, request.getTechStack(), request.getPosition(), request.getKeyword()));
 
     }
 

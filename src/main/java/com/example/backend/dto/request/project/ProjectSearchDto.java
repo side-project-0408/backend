@@ -19,4 +19,6 @@ public class ProjectSearchDto {
 
     private String sort;
 
+    private String keyword;
+
 }

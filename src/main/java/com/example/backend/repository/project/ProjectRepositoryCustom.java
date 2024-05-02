@@ -10,7 +10,7 @@ public interface ProjectRepositoryCustom {
 
     List<ProjectDetailResponseDto> findDetailByProjectId(Long projectId);
 
-    List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position);
+    List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position, String keyword);
 
     List<ProjectResponseDto> findHotProjects(int size);
 

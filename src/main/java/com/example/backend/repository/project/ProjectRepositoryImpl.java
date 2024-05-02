@@ -44,8 +44,14 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
         return condition;
     }
 
+    private BooleanExpression eqSearchWord(String keword) {
+        if (keword == null) return null;
+        return project.title.contains(keword)
+                .or(project.description.contains(keword));
+    }
+
     @Override
-    public List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position) {
+    public List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position, String keyword) {
 
         return queryFactory
                 .select(new QProjectResponseDto(
@@ -61,7 +67,8 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                         project.createdAt))
                 .from(project)
                 .where(eqTechStack(techStack),
-                        eqPosition(position))
+                        eqPosition(position),
+                        eqSearchWord(keyword))
                 .orderBy(project.createdAt.desc())//TODO Pageable Sort 타입 바꾸기
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
