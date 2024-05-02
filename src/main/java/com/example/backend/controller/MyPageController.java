@@ -4,7 +4,6 @@ import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateUserRequestDto;
-import com.example.backend.dto.request.people.UpdateRequestDto;
 import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.response.people.PeopleDetailResponseDto;
@@ -22,8 +21,6 @@ public class MyPageController {
     private final PeopleRepository peopleRepository;
     private final PeopleService peopleService;
     private final ProjectRepository projectRepository;
-    private final ProjectService projectService;
-
     private final ProjectService projectService;
 
     //마이페이지 내 정보 조회

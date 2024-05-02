@@ -35,7 +35,6 @@ public class PeopleDetailResponseDto {
         this.year = user.getYear();
         this.techStack = user.getTechStack();
         this.softSkill = user.getSoftSkill();
-        this.importantQuestion = user.getImportantQuestion();
         this.links = user.getLinks();
         this.alarmStatus = user.isAlarmStatus();
         this.content = user.getContent();
