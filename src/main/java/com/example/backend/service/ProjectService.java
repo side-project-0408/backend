@@ -27,6 +27,7 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
+    // 프로젝트 저장
     public String postProject(ProjectRequestDto request) {
 
         List<Recruit> recruits = new ArrayList<>();
@@ -61,33 +62,24 @@ public class ProjectService {
 
         projectRepository.save(project);
 
-        return "Project creation completed";
+        return "프로젝트 저장 완료";
 
     }
 
-    public ProjectResponseDto findProjects(ProjectSearchDto request) {
+    // 프로젝트 목록 가져오기
+    public List<ProjectResponseDto> findProjects(ProjectSearchDto request) {
 
-        String sort = request.getSort().isBlank() ? "createdAt" : request.getSort();
+        String sort = request.getSort() == null ? "createdAt" : request.getSort();
 
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(sort).descending());
 
-        projectRepository.findProjects(pageable, request.getTechStack(), request.getPosition());
+        return checkRecent(projectRepository.findProjects(pageable, request.getTechStack(), request.getPosition(), request.getKeyword()));
 
-
-        return null;
     }
 
-    public ProjectDetailResponseDto findProjectDetail(Long projectId) {
-        //TODO
-        return null;
-    }
-
-    public ProjectResponseDto findHotProjects() {
-        //TODO
-        return null;
-    }
-
+    // 프로젝트 상세 정보 가져오기
     public ProjectDetailResponseDto findProject(Long projectId) {
+
         List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
 
         return ProjectDetailResponseDto.builder()
@@ -112,4 +104,71 @@ public class ProjectService {
                 .build();
 
     }
+
+    // 핫 프로젝트 목록 가져오기
+    public List<ProjectResponseDto> findHotProjects(int size) {
+        return checkRecent(projectRepository.findHotProjects(size));
+    }
+
+    public List<ProjectResponseDto> findFavoriteProjects(Long userId, ProjectSearchDto request) {
+
+        String sort = request.getSort() == null ? "createdAt" : request.getSort();
+
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(sort).descending());
+
+        return checkRecent(projectRepository.findFavoriteProjects(userId, pageable));
+
+    }
+
+    // 내가 작성한 프로젝트 가져오기
+    public List<ProjectResponseDto> findMyProjects(Long userId, ProjectSearchDto request) {
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        return checkRecent(projectRepository.findMyProjects(userId, pageable));
+    }
+
+    // 프로젝트 수정
+    public String updateProject(Long projectId, ProjectRequestDto request) {
+
+        Project project = projectRepository.findByProjectId(projectId);
+
+        List<Recruit> recruits = project.getRecruits();
+
+        String position = "";
+
+        if (!recruits.isEmpty()) recruits.clear();
+
+        for (RecruitRequestDto recruitDto : request.getRecruit()) {
+            recruits.add(Recruit.builder()
+                    .project(project)
+                    .position(recruitDto.getPosition())
+                    .currentCount(recruitDto.getCurrentCount())
+                    .targetCount(recruitDto.getTargetCount())
+                    .build());
+            position += recruitDto.getPosition() + ", ";
+        }
+
+        project.updateTitle(request.getTitle());
+        project.updateProjectFileUrl(request.getProjectFileUrl());
+        project.updateDeadline(request.getDeadline());
+        project.updateImportantQuestion(request.getImportantQuestion());
+        project.updateSoftSkill(request.getSoftSkill());
+        project.updateTechStack(request.getTechStack());
+        project.updateDescription(request.getDescription());
+        project.updateRecruit(recruits);
+        project.updatePosition(position.substring(0, position.length() - 2));
+        project.updateLastModifiedAt(LocalDateTime.now());
+
+        return "프로젝트 수정 완료";
+
+    }
+
+    // 신규 스티커 여부 (생성한 후 1주일)
+    public List<ProjectResponseDto> checkRecent(List<ProjectResponseDto> projects){
+        for (ProjectResponseDto project : projects) {
+            boolean recent = project.getCreatedAt().isBefore(LocalDateTime.now().plusWeeks(1)) ? true : false;
+            project.setRecent(recent);
+        }
+        return projects;
+    }
+
 }

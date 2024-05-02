@@ -22,55 +22,82 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    private BooleanExpression eqTechStack(String techStackCsv) {
-        if (techStackCsv.isBlank()) return null;
-        String[] split = techStackCsv.split(", ");
-        BooleanExpression condition = null;
-        for (String stack : split) {
-            BooleanExpression stackCondition = project.techStack.contains(stack);
-            condition = (condition == null) ? stackCondition : condition.and(stackCondition);
-        }
-        return condition;
-    }
-
-    private BooleanExpression eqPosition(String positionCsv) {
-        if (positionCsv.isBlank()) return null;
-        String[] split = positionCsv.split(", ");
-        BooleanExpression condition = null;
-        for (String position : split) {
-            BooleanExpression positionCondition = project.position.contains(position);
-            condition = (condition == null) ? positionCondition : condition.and(positionCondition);
-        }
-        return condition;
-    }
-
+    // 프로젝트 목록 가져오기
     @Override
-    public List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position) {
+    public List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position, String keyword) {
 
-        List<ProjectResponseDto> result = queryFactory
+        return queryFactory
                 .select(new QProjectResponseDto(
                         project.projectId,
                         project.user.nickname,
                         project.user.userFileUrl,
                         project.title,
                         project.techStack,
+                        project.position,
                         project.deadline,
                         project.viewCount,
-                        project.favoriteCount))
+                        project.favoriteCount,
+                        project.createdAt))
                 .from(project)
                 .where(eqTechStack(techStack),
-                        eqPosition(position))
-                .orderBy()//TODO Pageable Sort 타입 바꾸기
+                        eqPosition(position),
+                        eqSearchWord(keyword))
+                .orderBy(project.createdAt.desc())//TODO Pageable Sort 타입 바꾸기
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-
-
-
-        return null;
     }
 
+    // 핫 프로젝트 목록 가져오기
+    @Override
+    public List<ProjectResponseDto> findHotProjects(int size) {
+
+        return queryFactory
+                .select(new QProjectResponseDto(
+                        project.projectId,
+                        project.user.nickname,
+                        project.user.userFileUrl,
+                        project.title,
+                        project.techStack,
+                        project.position,
+                        project.deadline,
+                        project.viewCount,
+                        project.favoriteCount,
+                        project.createdAt))
+                .from(project)
+                .orderBy(project.favoriteCount.desc())//TODO 인기 순위 조건 생각하기
+                .limit(size)
+                .fetch();
+
+    }
+
+    // 내가 찜한 프로젝트 목록 가져오기
+    @Override
+    public List<ProjectResponseDto> findFavoriteProjects(Long userId, Pageable pageable) {
+
+        return queryFactory
+                .select(new QProjectResponseDto(
+                        project.projectId,
+                        project.user.nickname,
+                        project.user.userFileUrl,
+                        project.title,
+                        project.techStack,
+                        project.position,
+                        project.deadline,
+                        project.viewCount,
+                        project.favoriteCount,
+                        project.createdAt))
+                .from(project)
+                .where(project.projectLike.contains(userId))
+                .orderBy(project.createdAt.desc())//TODO Pageable Sort 타입 바꾸기
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+    }
+
+    // 프로젝트 상세 정보 가져오기
     @Override
     public List<ProjectDetailResponseDto> findDetailByProjectId(Long projectId) {
 
@@ -101,6 +128,62 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                                 recruit.currentCount,
                                 recruit.targetCount)))));
 
+    }
+
+    // 내가 작성한 프로젝트 가져오기
+    @Override
+    public List<ProjectResponseDto> findMyProjects(Long userId, Pageable pageable) {
+
+        return queryFactory
+                .select(new QProjectResponseDto(
+                        project.projectId,
+                        project.user.nickname,
+                        project.user.userFileUrl,
+                        project.title,
+                        project.techStack,
+                        project.position,
+                        project.deadline,
+                        project.viewCount,
+                        project.favoriteCount,
+                        project.createdAt))
+                .from(project)
+                .where(project.user.userId.eq(userId))
+                .orderBy(project.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+    }
+
+    // 기술 스택 동적 쿼리
+    private BooleanExpression eqTechStack(String techStackCsv) {
+        if (techStackCsv == null) return null;
+        String[] split = techStackCsv.split(", ");
+        BooleanExpression condition = null;
+        for (String stack : split) {
+            BooleanExpression stackCondition = project.techStack.contains(stack);
+            condition = (condition == null) ? stackCondition : condition.and(stackCondition);
+        }
+        return condition;
+    }
+
+    // 포지션 스택 동적 쿼리
+    private BooleanExpression eqPosition(String positionCsv) {
+        if (positionCsv == null) return null;
+        String[] split = positionCsv.split(", ");
+        BooleanExpression condition = null;
+        for (String position : split) {
+            BooleanExpression positionCondition = project.position.contains(position);
+            condition = (condition == null) ? positionCondition : condition.and(positionCondition);
+        }
+        return condition;
+    }
+
+    // 검색어 동적 쿼리
+    private BooleanExpression eqSearchWord(String keword) {
+        if (keword == null) return null;
+        return project.title.contains(keword)
+                .or(project.description.contains(keword));
     }
 
 }

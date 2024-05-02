@@ -13,24 +13,29 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+    // 프로젝트 목록 가져오기
     @PostMapping("/projects")
     public CommonApiResponse<?> postProject(@RequestBody ProjectRequestDto request) {
         return new CommonApiResponse<>("success", projectService.postProject(request));
     }
 
+    // 프로젝트 저장
     @GetMapping("/projects")
     public CommonApiResponse<?> getProjects(@ModelAttribute ProjectSearchDto request) {
+        System.out.println(request.toString());
         return new CommonApiResponse<>("success", projectService.findProjects(request));
     }
 
+    // 프로젝트 상세 정보 가져오기
     @GetMapping("/projects/{projectId}")
     public CommonApiResponse<?> getProject(@PathVariable Long projectId) {
         return new CommonApiResponse<>("success", projectService.findProject(projectId));
     }
 
+    // 핫 프로젝트 목록 가져오기
     @GetMapping("/projects/hot")
-    public CommonApiResponse<?> getHotProjects() {
-        return new CommonApiResponse<>("success", projectService.findHotProjects());
+    public CommonApiResponse<?> getHotProjects(@RequestParam int size) {
+        return new CommonApiResponse<>("success", projectService.findHotProjects(size));
     }
 
 }
