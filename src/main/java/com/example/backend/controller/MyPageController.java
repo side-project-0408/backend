@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
+import com.example.backend.dto.request.people.UpdateUserRequestDto;
 import com.example.backend.dto.request.people.UpdateRequestDto;
 import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
@@ -21,6 +22,7 @@ public class MyPageController {
     private final PeopleRepository peopleRepository;
     private final PeopleService peopleService;
     private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
     private final ProjectService projectService;
 
@@ -36,7 +38,7 @@ public class MyPageController {
 
     //마이페이지 내 정보 수정
     @PatchMapping("/users/{userId}")
-    public CommonApiResponse<?> editUser(@PathVariable("userId") Long userId, @RequestBody UpdateRequestDto dto) {
+    public CommonApiResponse<?> editUser(@PathVariable("userId") Long userId, @RequestBody UpdateUserRequestDto dto) {
 
         return new CommonApiResponse<>("success", peopleService.update(userId, dto));
     }
@@ -46,6 +48,7 @@ public class MyPageController {
     public CommonApiResponse<?> updateProject(@PathVariable("projectId") Long projectId, @RequestBody ProjectRequestDto request) {
         return new CommonApiResponse<>("success", projectService.updateProject(projectId, request));
     }
+
 
     //내가 작성한 프로젝트 삭제
     @DeleteMapping("/posts/{userId}/{projectId}")

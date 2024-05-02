@@ -55,7 +55,7 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.position,
                         user.userFileUrl))
                 .from(user)
-                .orderBy(user.viewCount.desc())
+                .orderBy(user.viewCount.desc()) //TODO 최신순, 인기순 목록 어떻게 구현할지
                 .offset(dto.getPage())
                 .limit(10)
                 .fetch();
@@ -64,7 +64,7 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
 
     //내가 찜한 사람 목록
     @Override
-    public List<PeopleResponseDto> findFavoritePeoples(Long peopleId, Pageable pageable) {
+    public List<PeopleResponseDto> findFavoritePeoples(Long peopleId, Pageable pageable) { //TODO page 통일할부분 생각하기
         List<PeopleResponseDto> result = queryFactory
                 .select(new QPeopleResponseDto(
                         user.nickname,

@@ -1,5 +1,6 @@
 package com.example.backend.domain;
 
+import com.example.backend.dto.request.project.UpdateProjectRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -65,7 +66,7 @@ public class Project {
     @Column(name = "user_id")
     private Set<Long> projectLike = new HashSet<>();
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY, cascade = PERSIST)
     @JoinColumn(name = "created_id")
     private User user;
 
