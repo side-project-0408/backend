@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+import static com.example.backend.domain.QProject.project;
 import static com.example.backend.domain.QUser.user;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -28,8 +29,8 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
     @Override
     public List<PeopleResponseDto> findPeoples(PeopleSearchDto dto) {
 
-        OrderSpecifier<?> orderCondition = dto.getSc().equals("POPULAR")
-                ? user.viewCount.desc()
+        OrderSpecifier<?> orderCondition = dto.getSort().equalsIgnoreCase("POPULAR")
+                ? user.favoriteCount.add(project.viewCount).desc()
                 : user.createdAt.desc();
 
         List<PeopleResponseDto> result = queryFactory

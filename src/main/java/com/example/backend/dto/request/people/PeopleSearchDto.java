@@ -20,7 +20,4 @@ public class PeopleSearchDto {
     private String sort;
 
     private String keyword;
-
-    private String sc; //sortCondition 정렬 조건
-
 }
