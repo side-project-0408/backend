@@ -13,8 +13,8 @@ public class QPeopleResponseDto extends ConstructorExpression<PeopleResponseDto>
 
     private static final long serialVersionUID = -1617076029L;
 
-    public QPeopleResponseDto(com.querydsl.core.types.Expression<String> nickname, com.querydsl.core.types.Expression<Integer> favoriteCount, com.querydsl.core.types.Expression<Integer> viewCount, com.querydsl.core.types.Expression<String> position, com.querydsl.core.types.Expression<String> userFileUrl) {
-        super(PeopleResponseDto.class, new Class<?>[]{String.class, int.class, int.class, String.class, String.class}, nickname, favoriteCount, viewCount, position, userFileUrl);
+    public QPeopleResponseDto(com.querydsl.core.types.Expression<String> nickname, com.querydsl.core.types.Expression<Integer> favoriteCount, com.querydsl.core.types.Expression<Integer> viewCount, com.querydsl.core.types.Expression<String> position, com.querydsl.core.types.Expression<String> userFileUrl, com.querydsl.core.types.Expression<String> techStack, com.querydsl.core.types.Expression<String> softSkill) {
+        super(PeopleResponseDto.class, new Class<?>[]{String.class, int.class, int.class, String.class, String.class, String.class, String.class}, nickname, favoriteCount, viewCount, position, userFileUrl, techStack, softSkill);
     }
 
 }

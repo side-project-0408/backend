@@ -19,4 +19,6 @@ public class PeopleSearchDto {
 
     private String sort;
 
+    private String keyword;
+
 }

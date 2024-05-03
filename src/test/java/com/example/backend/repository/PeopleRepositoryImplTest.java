@@ -35,13 +35,14 @@ class PeopleRepositoryImplTest {
                 "java, spring, nodejs", 100, 300, LocalDateTime.now());
 
         User userB = new User("bbb", "frontend", "pictures/userPicture.jpg",
-                "javascript, nextJs", 200, 600, LocalDateTime.now().minusDays(1));
+                "javascript, nextjs", 200, 600, LocalDateTime.now().minusDays(1));
 
         peopleRepository.save(userA);
         peopleRepository.save(userB);
 
         PeopleSearchDto dto = new PeopleSearchDto();
-        dto.setNickname("aaa");
+        //dto.setTechSize("spring");
+        dto.setKeyword("aaa");
 
         List<PeopleResponseDto> result = peopleRepository.findPeoples(dto);
 
