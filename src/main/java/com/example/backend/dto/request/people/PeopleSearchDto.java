@@ -21,4 +21,6 @@ public class PeopleSearchDto {
 
     private String keyword;
 
+    private String sc; //sortCondition 정렬 조건
+
 }

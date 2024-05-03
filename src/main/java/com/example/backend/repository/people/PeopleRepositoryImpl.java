@@ -4,16 +4,14 @@ import com.example.backend.dto.request.people.HotSearchDto;
 import com.example.backend.dto.request.people.PeopleSearchDto;
 import com.example.backend.dto.response.people.PeopleResponseDto;
 import com.example.backend.dto.response.people.QPeopleResponseDto;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 
-import static com.example.backend.domain.QProject.project;
 import static com.example.backend.domain.QUser.user;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -30,6 +28,10 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
     @Override
     public List<PeopleResponseDto> findPeoples(PeopleSearchDto dto) {
 
+        OrderSpecifier<?> orderCondition = dto.getSc().equals("POPULAR")
+                ? user.viewCount.desc()
+                : user.createdAt.desc();
+
         List<PeopleResponseDto> result = queryFactory
                 .select(new QPeopleResponseDto(
                         user.nickname,
@@ -43,7 +45,7 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                 .where(techSizeEq(dto.getTechSize()),
                         positionEq(dto.getPosition()),
                         keywordEq(dto.getKeyword()))
-                .orderBy(user.createdAt.desc())
+                .orderBy(orderCondition)
                 .offset(dto.getPage())
                 .limit(10)
                 .fetch();
