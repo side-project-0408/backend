@@ -13,13 +13,13 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    // 프로젝트 목록 가져오기
+    // 프로젝트 저장
     @PostMapping("/projects")
     public CommonApiResponse<?> postProject(@RequestBody ProjectRequestDto request) {
         return new CommonApiResponse<>("success", projectService.postProject(request));
     }
 
-    // 프로젝트 저장
+    // 프로젝트 목록 가져오기
     @GetMapping("/projects")
     public CommonApiResponse<?> getProjects(@ModelAttribute ProjectSearchDto request) {
         System.out.println(request.toString());

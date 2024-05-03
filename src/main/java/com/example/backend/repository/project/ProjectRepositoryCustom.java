@@ -1,5 +1,6 @@
 package com.example.backend.repository.project;
 
+import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +11,7 @@ public interface ProjectRepositoryCustom {
 
     List<ProjectDetailResponseDto> findDetailByProjectId(Long projectId);
 
-    List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position, String keyword);
+    List<ProjectResponseDto> findProjects(Pageable pageable, ProjectSearchDto searchDto);
 
     List<ProjectResponseDto> findHotProjects(int size);
 

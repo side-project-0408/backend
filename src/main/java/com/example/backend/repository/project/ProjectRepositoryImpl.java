@@ -1,9 +1,11 @@
 package com.example.backend.repository.project;
 
+import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.request.project.RecruitRequestDto;
 import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
 import com.example.backend.dto.response.project.QProjectResponseDto;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,7 +26,11 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     // 프로젝트 목록 가져오기
     @Override
-    public List<ProjectResponseDto> findProjects(Pageable pageable, String techStack, String position, String keyword) {
+    public List<ProjectResponseDto> findProjects(Pageable pageable, ProjectSearchDto searchDto) {
+
+        OrderSpecifier<?> orderCondition = searchDto.getSort().equalsIgnoreCase("POPULAR")
+                ? project.favoriteCount.add(project.viewCount).desc()
+                : project.createdAt.desc();
 
         return queryFactory
                 .select(new QProjectResponseDto(
@@ -39,10 +45,10 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                         project.favoriteCount,
                         project.createdAt))
                 .from(project)
-                .where(eqTechStack(techStack),
-                        eqPosition(position),
-                        eqSearchWord(keyword))
-                .orderBy(project.createdAt.desc())//TODO Pageable Sort 타입 바꾸기
+                .where(eqTechStack(searchDto.getTechStack()),
+                        eqPosition(searchDto.getPosition()),
+                        eqKeyword(searchDto.getKeyword()))
+                .orderBy(orderCondition)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -66,7 +72,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                         project.favoriteCount,
                         project.createdAt))
                 .from(project)
-                .orderBy(project.favoriteCount.desc())//TODO 인기 순위 조건 생각하기
+                .orderBy(project.favoriteCount.add(project.viewCount).desc())//TODO 인기 순위 조건 생각하기
                 .limit(size)
                 .fetch();
 
@@ -90,7 +96,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                         project.createdAt))
                 .from(project)
                 .where(project.projectLike.contains(userId))
-                .orderBy(project.createdAt.desc())//TODO Pageable Sort 타입 바꾸기
+                .orderBy(project.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -180,10 +186,10 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     }
 
     // 검색어 동적 쿼리
-    private BooleanExpression eqSearchWord(String keword) {
-        if (keword == null) return null;
-        return project.title.contains(keword)
-                .or(project.description.contains(keword));
+    private BooleanExpression eqKeyword(String keyword) {
+        if (keyword == null) return null;
+        return project.title.contains(keyword)
+                .or(project.description.contains(keyword));
     }
 
 }

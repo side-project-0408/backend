@@ -1,12 +1,12 @@
 package com.example.backend.dto.request.project;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
+@Builder
 public class ProjectSearchDto {
 
     private int page;
