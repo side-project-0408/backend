@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import static com.example.backend.domain.QProject.project;
 import static com.example.backend.domain.QUser.user;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -89,30 +90,18 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
         return result;
     }
 
-    /**
-     * 수정 필요
-     * 기술 스택 (java로 검색시 javascript도 동시에 출력되는 현상 해결해야 함)
-     */
-
+    //기술 스택 조건 검색
     private BooleanExpression techSizeEq(String techSize) {
-        if (techSize == null || techSize.trim().isEmpty()) {
-            return null;  // 조건이 없을 때 null 반환
-        }
+        if (techSize == null || techSize.trim().isEmpty()) return null;
 
-        String[] split = techSize.split(",\\s*");  // techSize 문자열 분리
+        String[] split = techSize.split(", ");
         BooleanExpression condition = null;
 
         for (String stack : split) {
-            // user.techStack에서 정확하게 일치하는지 확인
-            BooleanExpression stackCondition = user.techStack.like("%," + stack + ",%")  // 중간에 있는 경우
-                    .or(user.techStack.startsWith(stack + ","))  // 처음에 있는 경우
-                    .or(user.techStack.endsWith("," + stack))  // 끝에 있는 경우
-                    .or(user.techStack.eq(stack));  // 전체가 동일한 경우
-
-            condition = (condition == null) ? stackCondition : condition.and(stackCondition);  // 조건 연결
+            BooleanExpression stackCondition = user.techStack.contains(stack);
+            condition = (condition == null) ? stackCondition : condition.and(stackCondition);
         }
-
-        return condition;  // 조건 반환
+        return condition;
     }
 
     private BooleanExpression positionEq(String position) {

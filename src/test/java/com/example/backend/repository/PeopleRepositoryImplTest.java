@@ -41,8 +41,8 @@ class PeopleRepositoryImplTest {
         peopleRepository.save(userB);
 
         PeopleSearchDto dto = new PeopleSearchDto();
-        //dto.setTechSize("spring");
-        dto.setKeyword("aaa");
+        dto.setTechSize("nextjs");
+        //dto.setKeyword("aaa");
 
         List<PeopleResponseDto> result = peopleRepository.findPeoples(dto);
 
