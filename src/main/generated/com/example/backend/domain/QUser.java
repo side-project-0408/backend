@@ -20,8 +20,6 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
-    public final StringPath accessToken = createString("accessToken");
-
     public final BooleanPath alarmStatus = createBoolean("alarmStatus");
 
     public final StringPath content = createString("content");
@@ -42,7 +40,9 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<Project, QProject> projects = this.<Project, QProject>createList("projects", Project.class, QProject.class, PathInits.DIRECT2);
 
-    public final StringPath refreshToken = createString("refreshToken");
+    public final NumberPath<Long> socialId = createNumber("socialId", Long.class);
+
+    public final NumberPath<Long> socialType = createNumber("socialType", Long.class);
 
     public final StringPath softSkill = createString("softSkill");
 
