@@ -166,7 +166,7 @@ public class ProjectService {
     // 신규 스티커 여부 (생성한 후 1주일)
     public List<ProjectResponseDto> checkRecent(List<ProjectResponseDto> projects){
         for (ProjectResponseDto project : projects) {
-            boolean recent = project.getCreatedAt().isBefore(LocalDateTime.now().plusWeeks(1));
+            boolean recent = !project.getCreatedAt().isBefore(LocalDateTime.now().minusWeeks(1));
             project.setRecent(recent);
         }
         return projects;

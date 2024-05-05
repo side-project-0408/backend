@@ -28,7 +28,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
     @Override
     public List<ProjectResponseDto> findProjects(Pageable pageable, ProjectSearchDto searchDto) {
 
-        OrderSpecifier<?> orderCondition = searchDto.getSort().equalsIgnoreCase("POPULAR")
+        OrderSpecifier<?> orderCondition = searchDto.getSort() == null || searchDto.getSort().equalsIgnoreCase("POPULAR")
                 ? project.favoriteCount.add(project.viewCount).desc()
                 : project.createdAt.desc();
 
