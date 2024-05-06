@@ -4,6 +4,7 @@ import com.example.backend.dto.request.people.HotSearchDto;
 import com.example.backend.dto.request.people.PeopleSearchDto;
 import com.example.backend.dto.response.people.PeopleResponseDto;
 import com.example.backend.dto.response.people.QPeopleResponseDto;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+import static com.example.backend.domain.QProject.project;
 import static com.example.backend.domain.QUser.user;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -27,18 +29,24 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
     @Override
     public List<PeopleResponseDto> findPeoples(PeopleSearchDto dto) {
 
+        OrderSpecifier<?> orderCondition = dto.getSort().equalsIgnoreCase("POPULAR")
+                ? user.favoriteCount.add(project.viewCount).desc()
+                : user.createdAt.desc();
+
         List<PeopleResponseDto> result = queryFactory
                 .select(new QPeopleResponseDto(
                         user.nickname,
                         user.favoriteCount,
                         user.viewCount,
                         user.position,
-                        user.userFileUrl))
+                        user.userFileUrl,
+                        user.techStack,
+                        user.softSkill))
                 .from(user)
-                .where(nicknameEq(dto.getNickname()),
-                        techSizeEq(dto.getTechSize()),
-                        positionEq(dto.getPosition()))
-                .orderBy(user.createdAt.desc())
+                .where(techSizeEq(dto.getTechSize()),
+                        positionEq(dto.getPosition()),
+                        keywordEq(dto.getKeyword()))
+                .orderBy(orderCondition)
                 .offset(dto.getPage())
                 .limit(10)
                 .fetch();
@@ -53,7 +61,9 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.favoriteCount,
                         user.viewCount,
                         user.position,
-                        user.userFileUrl))
+                        user.userFileUrl,
+                        user.techStack,
+                        user.softSkill))
                 .from(user)
                 .orderBy(user.viewCount.desc()) //TODO 최신순, 인기순 목록 어떻게 구현할지
                 .offset(dto.getPage())
@@ -71,7 +81,9 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.favoriteCount,
                         user.viewCount,
                         user.position,
-                        user.userFileUrl))
+                        user.userFileUrl,
+                        user.techStack,
+                        user.softSkill))
                 .from(user)
                 .where(user.userLike.contains(peopleId))
                 .orderBy(user.createdAt.desc())
@@ -81,36 +93,27 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
         return result;
     }
 
-    private BooleanExpression nicknameEq(String nickname) {
-        return hasText(nickname) ? user.nickname.eq(nickname) : null;
-    }
-
-    /**
-     * 수정 필요
-     * 기술 스택 (java로 검색시 javascript도 동시에 출력되는 현상 해결해야 함)
-     */
+    //기술 스택 조건 검색
     private BooleanExpression techSizeEq(String techSize) {
-        if (!hasText(techSize)) {
-            return null;
-        }
+        if (techSize == null || techSize.trim().isEmpty()) return null;
 
-        String[] split = techSize.split(",");
+        String[] split = techSize.split(", ");
         BooleanExpression condition = null;
 
         for (String stack : split) {
             BooleanExpression stackCondition = user.techStack.contains(stack);
-
-            if (condition == null) {
-                condition = stackCondition;
-            } else {
-                condition = condition.or(stackCondition);
-            }
+            condition = (condition == null) ? stackCondition : condition.and(stackCondition);
         }
-
         return condition;
     }
 
     private BooleanExpression positionEq(String position) {
         return hasText(position) ? user.position.eq(position) : null;
+    }
+
+    private BooleanExpression keywordEq(String keyword) {
+        if (keyword == null) return null;
+        return user.nickname.contains(keyword)
+                .or(user.content.contains(keyword));
     }
 }

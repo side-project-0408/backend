@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.domain.User;
 import com.example.backend.repository.people.PeopleRepository;
 import jakarta.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +33,7 @@ class PeopleControllerTest {
                 "java, spring, nodejs", 100, 300, LocalDateTime.now());
 
         User userB = new User("bbb", "frontend", "pictures/userPicture.jpg",
-                "javascript, nextJs", 200, 600, LocalDateTime.now().minusDays(1));
+                "javascript,nextjs", 200, 600, LocalDateTime.now().minusDays(1));
 
         peopleRepository.save(userA);
         peopleRepository.save(userB);

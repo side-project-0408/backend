@@ -9,4 +9,7 @@ public interface PeopleRepository extends JpaRepository<User, Long>, PeopleRepos
 
     User findUserByUserId(Long userId);
 
+    User findByNickname(String nickname);
+
+    User findBySocialId(Long id);
 }
