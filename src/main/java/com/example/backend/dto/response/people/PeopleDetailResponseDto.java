@@ -18,7 +18,6 @@ public class PeopleDetailResponseDto {
     private String year;
     private String techStack;
     private String softSkill;
-    private String importantQuestion;
     private String links;
     private boolean alarmStatus;
     private String content;
