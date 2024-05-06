@@ -16,12 +16,19 @@ public class PeopleResponseDto {
 
     private String userFileUrl;
 
+    private String techStack;
+
+    private String softSkill;
+
     @QueryProjection
-    public PeopleResponseDto(String nickname, int favoriteCount, int viewCount, String position, String userFileUrl) {
+    public PeopleResponseDto(String nickname, int favoriteCount, int viewCount, String position, String userFileUrl,
+                             String techStack, String softSkill) {
         this.nickname = nickname;
         this.favoriteCount = favoriteCount;
         this.viewCount = viewCount;
         this.position = position;
         this.userFileUrl = userFileUrl;
+        this.techStack = techStack;
+        this.softSkill = softSkill;
     }
 }
