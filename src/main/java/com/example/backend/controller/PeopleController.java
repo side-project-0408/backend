@@ -9,6 +9,7 @@ import com.example.backend.dto.response.people.PeopleResponseDto;
 import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.repository.project.ProjectRepository;
 import com.example.backend.service.KakaoMessageService;
+import com.example.backend.service.ProposalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,8 +24,8 @@ public class PeopleController {
 
     private final PeopleRepository peopleRepository;
     private final ProjectRepository projectRepository;
-
     private final KakaoMessageService kakaoMessageService;
+    private final ProposalService proposalService;
 
     @GetMapping("/peoples")
     public CommonApiResponse<List<PeopleResponseDto>> getPeoples(@ModelAttribute PeopleSearchDto dto) {
@@ -64,19 +65,18 @@ public class PeopleController {
         long userId = 12345;
 
         //로그인한 사람이 작성한 프로젝트 게시글 URL 가져오기
-        String projectUrl = projectRepository.getProjectIdfindByUserUserId(userId);
+        String projectId = projectRepository.getProjectIdfindByUserUserId(userId);
 
         String messageText;
 
-        if (projectUrl == null) {
+        if (projectId == null) {
             messageText = "제안한 사람이 작성한 프로젝트가 없습니다.";
         } else {
-            messageText = "프로젝트 제안이 도착했습니다! " + projectUrl;
+            messageText = "프로젝트 제안이 도착했습니다! " + projectId;
         }
 
-        kakaoMessageService.sendKakaoMessage(authorizationHeader.replace("Bearer ", ""), messageText, projectUrl);
-
-
+        kakaoMessageService.sendKakaoMessage(authorizationHeader.replace("Bearer ", ""), messageText, projectId);
+        proposalService.save(userId, messageText);
         return new CommonApiResponse<>("success", "제안 신청이 성공하였습니다.");
     }
 }

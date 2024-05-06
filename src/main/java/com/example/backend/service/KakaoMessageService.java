@@ -5,16 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
 
+
+@Service
 public class KakaoMessageService {
 
     private static final String KAKAO_API_URL =  "https://kapi.kakao.com/v2/api/talk/channels";
 
-    public String sendKakaoMessage(String accessToken, String messageText, String projectUrl) throws Exception {
+    public String sendKakaoMessage(String accessToken, String messageText, String projectId) throws Exception {
         //HTTP 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer" + accessToken);
@@ -26,10 +29,10 @@ public class KakaoMessageService {
         message.put("text", messageText); // 메시지 내용
 
         // 링크 정보 추가
-        if (projectUrl != null) {
+        if (projectId != null) {
             Map<String, String> link = new HashMap<>();
-            link.put("web_url", projectUrl); // 웹 URL
-            link.put("mobile_url", projectUrl); // 모바일 URL (동일하게 설정)
+            link.put("web_url", projectId); // 웹 URL
+            link.put("mobile_url", projectId); // 모바일 URL (동일하게 설정)
             message.put("link", link);
         }
 
