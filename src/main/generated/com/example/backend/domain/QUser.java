@@ -42,7 +42,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Long> socialId = createNumber("socialId", Long.class);
 
-    public final NumberPath<Long> socialType = createNumber("socialType", Long.class);
+    public final StringPath socialType = createString("socialType");
 
     public final StringPath softSkill = createString("softSkill");
 
