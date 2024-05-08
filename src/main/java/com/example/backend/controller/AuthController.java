@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +14,8 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/auth/kakao/callback")
-    public String kakaoLogin(@RequestParam String code) {
-        return authService.login(code);
+    public CommonApiResponse<?> kakaoLogin(@RequestParam String code) {
+        return new CommonApiResponse<>("success", authService.login(code));
     }
 
 
