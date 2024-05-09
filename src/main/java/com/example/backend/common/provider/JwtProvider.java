@@ -1,6 +1,6 @@
 package com.example.backend.common.provider;
 
-import com.example.backend.dto.security.CustomUserDetails;
+import com.example.backend.dto.oauth2.CustomOAuth2User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -28,23 +28,28 @@ public class JwtProvider {
         return Keys.hmacShaKeyFor(keyByte);
     }
 
-    public String buildToken(CustomUserDetails customUserDetails, Long expiration) {
+    public String buildToken(CustomOAuth2User customOAuth2User, Long expiration) {
         Date expiryDate = new Date(new Date().getTime() + expiration);
+
         return Jwts.builder()
-                .setSubject(customUserDetails.getUsername())
-                .claim("user-id", customUserDetails.getUserId())
+                .setSubject(customOAuth2User.getUser().getNickname())
+                .claim("userId", customOAuth2User.getUser().getUserId())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String createAccessToken(CustomUserDetails customUserDetails) {
-        return buildToken(customUserDetails, accessExpiration);
+    public String createAccessToken(CustomOAuth2User customOAuth2User) {
+        return buildToken(customOAuth2User, accessExpiration);
     }
 
-    public String createRefreshToken(CustomUserDetails customUserDetails) {
-        return buildToken(customUserDetails, refreshExpiration);
+    public String createRefreshToken(CustomOAuth2User customOAuth2User) {
+        return buildToken(customOAuth2User, refreshExpiration);
+    }
+
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
 
     public Long getUserIdFromToken(String token) {
@@ -76,9 +81,27 @@ public class JwtProvider {
             return false;
         }
     }
+/* TODO 토큰 유효성 검사
 
-    public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("X_AUTH_TOKEN");
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+
+ */
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader("Authorization");
+    }
+
+
 
 }

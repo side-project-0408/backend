@@ -32,7 +32,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         token = authHeader.substring(7);
 
-        userId = Long.parseLong(jwtService.getUserId(jwt));// todo extract the userEmail from JWT token
+        userId = Long.parseLong(jwtService.getUserId(jwt));
 
         filterChain.doFilter(request, response);
     }

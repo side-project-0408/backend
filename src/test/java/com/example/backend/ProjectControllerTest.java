@@ -2,17 +2,15 @@ package com.example.backend;
 
 import com.example.backend.common.provider.JwtProvider;
 import com.example.backend.domain.User;
-import com.example.backend.dto.security.CustomUserDetails;
+import com.example.backend.dto.oauth2.CustomOAuth2User;
 import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.service.ProjectService;
+import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @SpringBootTest
 @Transactional
@@ -33,15 +31,23 @@ public class ProjectControllerTest {
 
         User user = peopleRepository.findUserByUserId(1L);
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
-        Map<String, String> tokens = new HashMap<>();
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(user, "kakao");
 
-        String accessToken = jwtProvider.createAccessToken(customUserDetails);
-        String refreshToken = jwtProvider.createRefreshToken(customUserDetails);
+        String accessToken = jwtProvider.createAccessToken(customOAuth2User);
+        String refreshToken = jwtProvider.createRefreshToken(customOAuth2User);
 
-        System.out.println(accessToken);
+        Claims accessClaims = jwtProvider.getClaimsFromToken(accessToken);
+
+
+        System.out.println("accessToken : " + accessToken);
         System.out.println("==============");
-        System.out.println(refreshToken);
+        System.out.println("refreshToken : " + refreshToken);
+
+
+        System.out.println(accessClaims.getSubject());
+        System.out.println(accessClaims.getExpiration());
+        System.out.println(accessClaims.get("userId", Long.class));
+        System.out.println(accessClaims.getIssuedAt());
 
 
 
