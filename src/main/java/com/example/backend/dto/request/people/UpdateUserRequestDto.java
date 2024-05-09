@@ -2,6 +2,7 @@ package com.example.backend.dto.request.people;
 
 import lombok.Data;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class UpdateUserRequestDto {
@@ -17,5 +18,5 @@ public class UpdateUserRequestDto {
     private String content;
     private String softSkill;
     private String importantQuestion;
-
+    private MultipartFile userFile;
 }
