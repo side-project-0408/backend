@@ -1,20 +1,28 @@
-package com.example.backend.common.provider;
+package com.example.backend.service;
 
+import com.example.backend.domain.TokenBlackList;
+import com.example.backend.domain.User;
 import com.example.backend.dto.oauth2.CustomOAuth2User;
+import com.example.backend.repository.JwtRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 
-@Component
-public class JwtProvider {
+@Service
+@RequiredArgsConstructor
+public class JwtService {
+
+    private final JwtRepository jwtRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -50,11 +58,27 @@ public class JwtProvider {
         return buildToken(customOAuth2User, refreshExpiration);
     }
 
-
-
     public Boolean validToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return claims.getExpiration().before(new Date());
+    }
+
+    public String reissueAccessToken(HttpServletRequest request) {
+        String refreshToken = resolveToken(request);
+        Optional<TokenBlackList> jwtOptional = jwtRepository.findByToken(refreshToken);
+
+        if (jwtOptional.isPresent()) { // 블랙 리스트에 등록된 토큰인 경우
+            return "유효한 토큰이 아닙니다.";
+        }
+
+        Claims claims = getClaimsFromToken(refreshToken);
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(
+                User.builder()
+                        .nickname(claims.getSubject())
+                        .userId(claims.get("userId", Long.class))
+                        .build());
+
+        return createAccessToken(customOAuth2User);
     }
 
     public String resolveToken(HttpServletRequest request) {

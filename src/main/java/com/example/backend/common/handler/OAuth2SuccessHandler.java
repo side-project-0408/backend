@@ -1,6 +1,6 @@
 package com.example.backend.common.handler;
 
-import com.example.backend.common.provider.JwtProvider;
+import com.example.backend.service.JwtService;
 import com.example.backend.dto.oauth2.CustomOAuth2User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtProvider jwtProvider;
+    private final JwtService jwtProvider;
     private static final String URI = "/auth/success";
 
     @Override

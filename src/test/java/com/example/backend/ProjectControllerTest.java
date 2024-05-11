@@ -1,6 +1,6 @@
 package com.example.backend;
 
-import com.example.backend.common.provider.JwtProvider;
+import com.example.backend.service.JwtService;
 import com.example.backend.domain.User;
 import com.example.backend.dto.oauth2.CustomOAuth2User;
 import com.example.backend.repository.people.PeopleRepository;
@@ -21,7 +21,7 @@ public class ProjectControllerTest {
     ProjectService projectService;
 
     @Autowired
-    JwtProvider jwtProvider;
+    JwtService jwtProvider;
 
     @Autowired
     PeopleRepository peopleRepository;
