@@ -49,10 +49,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(
                                 new AntPathRequestMatcher("/auth/success"),
-                                new AntPathRequestMatcher("/token")
+                                        new AntPathRequestMatcher("/token"),
+                                        new AntPathRequestMatcher("/auth/logout")
                                 ).permitAll()
                 .anyRequest().authenticated()
                 )
+
 
                 // oauth2 설정
                 .oauth2Login(oauth -> // OAuth2 로그인 기능에 대한 여러 설정의 진입점

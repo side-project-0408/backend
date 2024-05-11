@@ -60,7 +60,7 @@ public class JwtService {
 
     public Boolean validToken(String token) {
         Claims claims = getClaimsFromToken(token);
-        return claims.getExpiration().before(new Date());
+        return claims.getExpiration().after(new Date());
     }
 
     public String reissueAccessToken(HttpServletRequest request) {
@@ -96,6 +96,12 @@ public class JwtService {
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         Claims claims = getClaimsFromToken(token);
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, null);
+    }
+
+    public String logout(HttpServletRequest request) {
+        String refreshToken = resolveToken(request);
+        jwtRepository.save(TokenBlackList.builder().refreshToken(refreshToken).build());
+        return "로그아웃 성공";
     }
 
 }

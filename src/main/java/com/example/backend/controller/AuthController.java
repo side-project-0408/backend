@@ -5,6 +5,7 @@ import com.example.backend.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +29,13 @@ public class AuthController {
 
     @GetMapping("/token")
     public CommonApiResponse<?> reissueAccessToken(HttpServletRequest request) {
+        System.out.println("controller");
         return new CommonApiResponse<>("success", jwtService.reissueAccessToken(request));
+    }
+
+    @PostMapping("/auth/logout")
+    public CommonApiResponse<?> logout(HttpServletRequest request) {
+        return new CommonApiResponse<>("success", jwtService.logout(request));
     }
 
 }
