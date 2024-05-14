@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,13 +40,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         String nickname = attributes.getNickname();
 
-        String picture;
-
-        if (attributes.getPicture() == null) {
-            picture = null;
-        }else {
-            picture = attributes.getPicture();
-        }
+        String picture = Optional.ofNullable(attributes.getPicture()).orElse(null);
 
         // 유저가 등록 되지 않은 상태
         if (peopleRepository.findBySocialId(attributes.getNameAttributeKey()) == null) {
