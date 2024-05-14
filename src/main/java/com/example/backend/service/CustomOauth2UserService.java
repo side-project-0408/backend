@@ -21,20 +21,16 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
         // OAuth2 서비스 id (구글, 카카오, 네이버)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         // OAuth2 로그인 진행 시 키가 되는 필드 값(PK)
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-
-        // OAuth2UserService
+        String userNameAttributeName = oAuth2User.getName();
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
         User user = saveOrUpdate(attributes);
 
         return new CustomOAuth2User(user, userNameAttributeName);
-
 
     }
 
@@ -43,22 +39,26 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         String nickname = attributes.getNickname();
 
-        //TODO 프로필 사진, 이메일 null 처리 필요
+        String picture;
+
+        if (attributes.getPicture() == null) {
+            picture = null;
+        }else {
+            picture = attributes.getPicture();
+        }
 
         // 유저가 등록 되지 않은 상태
-        if (peopleRepository.findBySocialId(Long.parseLong(attributes.getNameAttributeKey())) == null) {
+        if (peopleRepository.findBySocialId(attributes.getNameAttributeKey()) == null) {
 
-            // 닉네임 중복 검증, 새로운 닉네임 부여 (1 ~ 100 사이의 정수 문자열로 더하기)
-            if (peopleRepository.findByNickname(nickname) == null) {
-                while (peopleRepository.findByNickname(nickname) != null) {
-                    nickname += (int) (Math.random() * 100 + 1);
-                }
+            // 닉네임 중복 검증, 새로운 닉네임 부여
+            if (peopleRepository.findByNickname(nickname) != null) {
+                nickname += (int)(Math.random() * 100000 + 1);
             }
 
             User user = User.builder()
-                    .socialId(Long.parseLong(attributes.getNameAttributeKey()))
+                    .socialId(attributes.getNameAttributeKey())
                     .socialType(attributes.getRegistrationId())
-                    .userFileUrl(attributes.getPicture())
+                    .userFileUrl(picture)
                     .createdAt(LocalDateTime.now())
                     .nickname(nickname)
                     .build();
@@ -69,7 +69,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         }
 
-        return peopleRepository.findBySocialId(Long.parseLong(attributes.getNameAttributeKey()));
+        return peopleRepository.findBySocialId(attributes.getNameAttributeKey());
 
     }
 

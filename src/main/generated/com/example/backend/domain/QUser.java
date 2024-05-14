@@ -40,7 +40,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<Project, QProject> projects = this.<Project, QProject>createList("projects", Project.class, QProject.class, PathInits.DIRECT2);
 
-    public final NumberPath<Long> socialId = createNumber("socialId", Long.class);
+    public final StringPath socialId = createString("socialId");
 
     public final StringPath socialType = createString("socialType");
 

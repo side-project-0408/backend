@@ -24,7 +24,7 @@ public class User {
     private Long userId;
 
     @Column(name = "social_id")
-    private Long socialId;
+    private String socialId;
 
     @Column(name = "social_type")
     private String socialType;

@@ -1,11 +1,9 @@
 package com.example.backend.dto.oauth2;
 
-import com.example.backend.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Getter
@@ -16,7 +14,7 @@ public class OAuthAttributes {
     private String nameAttributeKey;
     private String registrationId;
     private String nickname;
-    private String email;
+    //private String email;
     private String picture;
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes){
@@ -35,21 +33,11 @@ public class OAuthAttributes {
 
         return OAuthAttributes.builder()
                 .nickname((String) kakaoProfile.get("nickname"))
-                .email((String) kakaoAccount.get("email"))
+                //.email((String) kakaoAccount.get("email"))
                 .picture((String) kakaoProfile.get("profile_image_url"))
                 .attributes(attributes)
                 .registrationId(registrationId)
                 .nameAttributeKey(userNameAttributeName)
-                .build();
-    }
-
-    public User toEntity(){
-        return User.builder()
-                .nickname(nickname)
-                .socialType("KAKAO")
-                .socialId(Long.parseLong(nameAttributeKey))
-                .userFileUrl(picture)
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 

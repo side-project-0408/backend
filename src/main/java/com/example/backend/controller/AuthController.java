@@ -18,7 +18,7 @@ public class AuthController {
 
     private final JwtService jwtService;
 
-    @GetMapping("/auth/success")
+    @GetMapping("/oauth2/success")
     public CommonApiResponse<?> oAuth2Success(@RequestParam("accessToken") String accessToken,
                                                              @RequestParam("refreshToken") String refreshToken) {
         Map<String, String> tokens = new HashMap<>();
@@ -33,7 +33,7 @@ public class AuthController {
         return new CommonApiResponse<>("success", jwtService.reissueAccessToken(request));
     }
 
-    @PostMapping("/auth/logout")
+    @PostMapping("/auth/blacklist")
     public CommonApiResponse<?> logout(HttpServletRequest request) {
         return new CommonApiResponse<>("success", jwtService.logout(request));
     }

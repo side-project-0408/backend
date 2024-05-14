@@ -1,6 +1,6 @@
 package com.example.backend.common.config;
 
-import com.example.backend.common.filter.JwtAuthFilter;
+import com.example.backend.common.filter.TokenAuthFilter;
 import com.example.backend.common.handler.OAuth2SuccessHandler;
 import com.example.backend.service.CustomOauth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -8,18 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -30,61 +21,38 @@ public class SecurityConfig {
 
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    private final JwtAuthFilter jwtAuthFilter;
+    private final TokenAuthFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
-                .csrf(AbstractHttpConfigurer::disable) // csrf 비활성화 -> cookie를 사용하지 않으면 꺼도 된다. (cookie를 사용할 경우 httpOnly(XSS 방어), sameSite(CSRF 방어)로 방어해야 한다.)
-                .cors(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 로그인 비활성화
-                .formLogin(AbstractHttpConfigurer::disable) // 기본 login form 비활성화
-                .logout(AbstractHttpConfigurer::disable) // 기본 logout 비활성화
-                .headers(c -> c.frameOptions(
-                        HeadersConfigurer.FrameOptionsConfig::disable).disable()) // X-Frame-Options 비활성화
-                .sessionManagement(c ->
-                        c.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음
 
-                // TODO request 인증, 인가 설정 추가
-                .authorizeHttpRequests(request ->
-                        request.requestMatchers(
-                                new AntPathRequestMatcher("/auth/success"),
-                                        new AntPathRequestMatcher("/token"),
-                                        new AntPathRequestMatcher("/auth/logout")
-                                ).permitAll()
-                .anyRequest().authenticated()
-                )
+                .csrf((auth) -> auth.disable())
 
+                .formLogin((auth) -> auth.disable())
 
-                // oauth2 설정
-                .oauth2Login(oauth -> // OAuth2 로그인 기능에 대한 여러 설정의 진입점
-                        // OAuth2 로그인 성공 이후 사용자 정보를 가져올 때의 설정을 담당
-                        oauth.userInfoEndpoint(c -> c.userService(oAuth2UserService))
-                                // 로그인 성공 시 핸들러
-                                .successHandler(oAuth2SuccessHandler))
+                .httpBasic((auth) -> auth.disable())
 
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .oauth2Login((oauth2) -> oauth2
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                .userService(oAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler))
+
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/oauth2/success").permitAll()
+                        .anyRequest().authenticated())
+
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
 
     }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE"));
-        configuration.setAllowCredentials(true);
-        configuration.addExposedHeader("Authorization");
-        configuration.addExposedHeader("Refresh");
-        configuration.addAllowedHeader("*");
-        configuration.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+
 
 }
-
-

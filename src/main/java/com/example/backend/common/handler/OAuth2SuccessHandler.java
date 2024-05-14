@@ -17,11 +17,12 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtService jwtProvider;
-    private static final String URI = "/auth/success";
+    private static final String URI = "/oauth2/success";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
+
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
         String accessToken = jwtProvider.createAccessToken(customOAuth2User);
