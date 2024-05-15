@@ -1,6 +1,5 @@
 package com.example.backend.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
@@ -13,7 +12,6 @@ import com.example.backend.repository.project.ProjectRepository;
 import com.example.backend.service.PeopleService;
 import com.example.backend.service.ProjectService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;

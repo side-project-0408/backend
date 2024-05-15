@@ -7,6 +7,8 @@ import com.example.backend.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 public class ProjectController {
@@ -15,7 +17,7 @@ public class ProjectController {
 
     // 프로젝트 저장
     @PostMapping("/projects")
-    public CommonApiResponse<?> postProject(@RequestBody ProjectRequestDto request) {
+    public CommonApiResponse<?> postProject(@RequestBody ProjectRequestDto request) throws IOException {
         return new CommonApiResponse<>("success", projectService.postProject(request));
     }
 
