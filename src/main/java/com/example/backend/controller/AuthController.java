@@ -29,12 +29,11 @@ public class AuthController {
 
     @GetMapping("/token")
     public CommonApiResponse<?> reissueAccessToken(HttpServletRequest request) {
-        System.out.println("controller");
         return new CommonApiResponse<>("success", jwtService.reissueAccessToken(request));
     }
 
-    @PostMapping("/auth/blacklist")
-    public CommonApiResponse<?> logout(HttpServletRequest request) {
+    @PostMapping("/token")
+    public CommonApiResponse<?> blackList(HttpServletRequest request) {
         return new CommonApiResponse<>("success", jwtService.logout(request));
     }
 
