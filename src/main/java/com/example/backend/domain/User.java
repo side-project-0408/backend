@@ -24,12 +24,14 @@ public class User {
     private Long userId;
 
     @Column(name = "social_id")
-    private Long socialId;
+    private String socialId;
 
     @Column(name = "social_type")
-    private Long socialType;
+    private String socialType;
 
     private String nickname;
+
+    private String email;
 
     private String position;
 
@@ -76,8 +78,6 @@ public class User {
     @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Project> projects = new ArrayList<>();
-
-
 
     public User(String nickname, String position, String userFileUrl, String techStack,
                 int viewCount, int favoriteCount, LocalDateTime createdAt) {
