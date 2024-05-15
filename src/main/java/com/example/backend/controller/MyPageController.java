@@ -14,6 +14,8 @@ import com.example.backend.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 public class MyPageController {
@@ -35,7 +37,7 @@ public class MyPageController {
 
     //마이페이지 내 정보 수정
     @PatchMapping("/users/{userId}")
-    public CommonApiResponse<?> editUser(@PathVariable("userId") Long userId, @RequestBody UpdateUserRequestDto dto) {
+    public CommonApiResponse<?> editUser(@PathVariable("userId") Long userId, @RequestBody UpdateUserRequestDto dto) throws IOException {
 
         return new CommonApiResponse<>("success", peopleService.update(userId, dto));
     }

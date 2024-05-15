@@ -1,6 +1,7 @@
 package com.example.backend.dto.request.project;
 
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,5 +26,7 @@ public class ProjectRequestDto {
     private String description;
 
     private List<RecruitRequestDto> recruit;
+
+    private MultipartFile file;
 
 }

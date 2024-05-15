@@ -58,7 +58,7 @@ public class CommentService {
 
     }
 
-    // 댓글 삭
+    // 댓글 삭제
     public String deleteComment(Long projectId, Long userId, Long commentId) {
 
         Comment comment = commentRepository.findByCommentId(commentId);

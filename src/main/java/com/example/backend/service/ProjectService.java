@@ -1,5 +1,7 @@
 package com.example.backend.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.Recruit;
 import com.example.backend.domain.User;
@@ -15,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,17 +29,23 @@ import java.util.List;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final AmazonS3Client amazonS3Client;
+    private final AwsS3Service awsS3Service;
+
 
     // 프로젝트 저장
-    public String postProject(ProjectRequestDto request) {
+    public String postProject(ProjectRequestDto request) throws IOException {
 
         List<Recruit> recruits = new ArrayList<>();
 
         String position = "";
 
+        String fileUrl = awsS3Service.upload(request.getFile());
+
         Project project = Project.builder().user(User.builder().userId(request.getCreatedId()).build())
                 .title(request.getTitle())
-                .projectFileUrl(request.getProjectFileUrl())
+                //.projectFileUrl(request.getProjectFileUrl())
+                .projectFileUrl(fileUrl)
                 .deadline(request.getDeadline())
                 .softSkill(request.getSoftSkill())
                 .importantQuestion(request.getImportantQuestion())
@@ -58,6 +68,8 @@ public class ProjectService {
 
         project.updatePosition(position.substring(0, position.length() - 2));
         project.updateRecruit(recruits);
+
+
 
         projectRepository.save(project);
 
@@ -166,7 +178,7 @@ public class ProjectService {
     // 신규 스티커 여부 (생성한 후 1주일)
     public List<ProjectResponseDto> checkRecent(List<ProjectResponseDto> projects){
         for (ProjectResponseDto project : projects) {
-            boolean recent = !project.getCreatedAt().isBefore(LocalDateTime.now().minusWeeks(1));
+            boolean recent = !project.getCreatedAt().isBefore(LocalDateTime.now().minusDays(1));
             project.setRecent(recent);
         }
         return projects;

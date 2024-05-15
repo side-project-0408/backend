@@ -1,41 +1,55 @@
 package com.example.backend;
 
-import com.example.backend.domain.Project;
-import com.example.backend.domain.Recruit;
+import com.example.backend.service.JwtService;
 import com.example.backend.domain.User;
+import com.example.backend.dto.oauth2.CustomOAuth2User;
+import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.service.ProjectService;
+import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.test.annotation.Rollback;
 
 @SpringBootTest
 @Transactional
+@Rollback
 public class ProjectControllerTest {
 
     @Autowired
     ProjectService projectService;
 
-    @Test
-    public void postProjectTest(){
+    @Autowired
+    JwtService jwtProvider;
 
-        List<Recruit> recruits = new ArrayList<>();
-        recruits.add(Recruit.builder().position("backend").currentCount(2).targetCount(3).build());
-        recruits.add(Recruit.builder().position("frontend").currentCount(4).targetCount(5).build());
-        User user = User.builder().nickname("AAA").build();
-        Project project = Project.builder()
-                .user(user)
-                .title("제목")
-                .projectFileUrl("user.jpg")
-                .deadline(LocalDate.now())
-                .softSkill("시관 관리, 직업 윤리")
-                .importantQuestion("주 1회 회의, 시간 관리")
-                .description("프로젝트 내용")
-                .recruits(recruits)
-                .build();
+    @Autowired
+    PeopleRepository peopleRepository;
+
+    @Test
+    public void jwtTest() {
+
+        User user = peopleRepository.findUserByUserId(1L);
+
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(user, "kakao");
+
+        String accessToken = jwtProvider.createAccessToken(customOAuth2User);
+        String refreshToken = jwtProvider.createRefreshToken(customOAuth2User);
+
+        Claims accessClaims = jwtProvider.getClaimsFromToken(accessToken);
+
+
+        System.out.println("accessToken : " + accessToken);
+        System.out.println("==============");
+        System.out.println("refreshToken : " + refreshToken);
+
+
+        System.out.println(accessClaims.getSubject());
+        System.out.println(accessClaims.getExpiration());
+        System.out.println(accessClaims.get("userId", Long.class));
+        System.out.println(accessClaims.getIssuedAt());
+
+
 
     }
 

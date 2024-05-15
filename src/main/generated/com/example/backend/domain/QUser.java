@@ -26,6 +26,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
+    public final StringPath email = createString("email");
+
     public final BooleanPath employmentStatus = createBoolean("employmentStatus");
 
     public final NumberPath<Integer> favoriteCount = createNumber("favoriteCount", Integer.class);
@@ -40,9 +42,9 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<Project, QProject> projects = this.<Project, QProject>createList("projects", Project.class, QProject.class, PathInits.DIRECT2);
 
-    public final NumberPath<Long> socialId = createNumber("socialId", Long.class);
+    public final StringPath socialId = createString("socialId");
 
-    public final NumberPath<Long> socialType = createNumber("socialType", Long.class);
+    public final StringPath socialType = createString("socialType");
 
     public final StringPath softSkill = createString("softSkill");
 
