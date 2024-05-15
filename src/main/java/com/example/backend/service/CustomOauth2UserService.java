@@ -41,6 +41,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         String nickname = attributes.getNickname();
 
         String picture = Optional.ofNullable(attributes.getPicture()).orElse(null);
+        String email = Optional.ofNullable(attributes.getEmail()).orElse(null);
 
         // 유저가 등록 되지 않은 상태
         if (peopleRepository.findBySocialId(attributes.getNameAttributeKey()) == null) {
@@ -54,6 +55,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
                     .socialId(attributes.getNameAttributeKey())
                     .socialType(attributes.getRegistrationId())
                     .userFileUrl(picture)
+                    .email(email)
                     .createdAt(LocalDateTime.now())
                     .nickname(nickname)
                     .build();

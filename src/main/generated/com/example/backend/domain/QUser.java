@@ -26,6 +26,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
+    public final StringPath email = createString("email");
+
     public final BooleanPath employmentStatus = createBoolean("employmentStatus");
 
     public final NumberPath<Integer> favoriteCount = createNumber("favoriteCount", Integer.class);

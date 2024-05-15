@@ -31,6 +31,8 @@ public class User {
 
     private String nickname;
 
+    private String email;
+
     private String position;
 
     @Column(name = "file_url")
@@ -76,8 +78,6 @@ public class User {
     @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Project> projects = new ArrayList<>();
-
-
 
     public User(String nickname, String position, String userFileUrl, String techStack,
                 int viewCount, int favoriteCount, LocalDateTime createdAt) {

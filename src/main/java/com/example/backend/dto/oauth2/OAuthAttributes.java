@@ -14,7 +14,7 @@ public class OAuthAttributes {
     private String nameAttributeKey;
     private String registrationId;
     private String nickname;
-    //private String email;
+    private String email;
     private String picture;
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes){
@@ -33,7 +33,7 @@ public class OAuthAttributes {
 
         return OAuthAttributes.builder()
                 .nickname((String) kakaoProfile.get("nickname"))
-                //.email((String) kakaoAccount.get("email"))
+                .email((String) kakaoAccount.get("email"))
                 .picture((String) kakaoProfile.get("profile_image_url"))
                 .attributes(attributes)
                 .registrationId(registrationId)
