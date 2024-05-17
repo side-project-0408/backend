@@ -2,6 +2,7 @@ package com.example.backend.common.handler;
 
 import com.example.backend.service.JwtService;
 import com.example.backend.dto.oauth2.CustomOAuth2User;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +17,16 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtService jwtProvider;
+    private final JwtService jwtService;
     private static final String URI = "/oauth2/success";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException {
-
+                                        Authentication authentication) throws IOException, ServletException {
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
-        String accessToken = jwtProvider.createAccessToken(customOAuth2User);
-        String refreshToken = jwtProvider.createRefreshToken(customOAuth2User);
+        String accessToken = jwtService.createAccessToken(customOAuth2User);
+        String refreshToken = jwtService.createRefreshToken(customOAuth2User);
 
         // 토큰 전달을 위한 redirect
         String redirectUrl = UriComponentsBuilder.fromUriString(URI)

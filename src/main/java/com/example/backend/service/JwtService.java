@@ -42,7 +42,7 @@ public class JwtService {
         Date expiryDate = new Date(new Date().getTime() + expiration);
 
         return Jwts.builder()
-                .setSubject(customOAuth2User.getUser().getNickname())
+                .setSubject(customOAuth2User.getName())
                 .claim("userId", customOAuth2User.getUser().getUserId())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
@@ -93,6 +93,11 @@ public class JwtService {
         return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
 
+    public Long getUserIdFromToken(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        return Long.parseLong(getClaimsFromToken(token).get("userId").toString());
+    }
+
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         Claims claims = getClaimsFromToken(token);
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, null);
@@ -101,7 +106,7 @@ public class JwtService {
     public String logout(HttpServletRequest request) {
         String refreshToken = resolveToken(request);
         jwtRepository.save(TokenBlackList.builder().refreshToken(refreshToken).build());
-        return "로그아웃 성공";
+        return "등록 성공";
     }
 
 }

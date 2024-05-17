@@ -32,10 +32,8 @@ public class ProjectControllerTest {
         User user = peopleRepository.findUserByUserId(1L);
 
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(user, "kakao");
-
         String accessToken = jwtProvider.createAccessToken(customOAuth2User);
         String refreshToken = jwtProvider.createRefreshToken(customOAuth2User);
-
         Claims accessClaims = jwtProvider.getClaimsFromToken(accessToken);
 
 

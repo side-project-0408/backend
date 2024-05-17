@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
+import com.example.backend.service.JwtService;
 import com.example.backend.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,6 @@ public class ProjectController {
     // 프로젝트 목록 가져오기
     @GetMapping("/projects")
     public CommonApiResponse<?> getProjects(@ModelAttribute ProjectSearchDto request) {
-        System.out.println(request.toString());
         return new CommonApiResponse<>("success", projectService.findProjects(request));
     }
 

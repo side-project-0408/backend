@@ -1,6 +1,5 @@
 package com.example.backend.service;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.Recruit;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,8 +42,8 @@ public class ProjectService {
 
         Project project = Project.builder().user(User.builder().userId(request.getCreatedId()).build())
                 .title(request.getTitle())
-                //.projectFileUrl(request.getProjectFileUrl())
-                .projectFileUrl(fileUrl)
+                .projectFileUrl(request.getProjectFileUrl())
+                //.projectFileUrl(fileUrl)
                 .deadline(request.getDeadline())
                 .softSkill(request.getSoftSkill())
                 .importantQuestion(request.getImportantQuestion())
