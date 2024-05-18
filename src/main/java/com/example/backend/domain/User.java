@@ -94,7 +94,7 @@ public class User {
         this.favoriteCount += count;
     }
 
-    public void addProjectLike(Long userId) {
+    public void addUserLike(Long userId) {
         this.userLike.add(userId);
     }
 

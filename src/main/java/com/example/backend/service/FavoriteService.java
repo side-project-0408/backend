@@ -2,9 +2,9 @@ package com.example.backend.service;
 
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
-import com.example.backend.dto.request.FavoriteRequest;
 import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.repository.project.ProjectRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +18,14 @@ public class FavoriteService {
 
     private final PeopleRepository peopleRepository;
 
+    private final JwtService jwtService;
+
     // 프로젝트 찜하기
-    public String projectFavorite(FavoriteRequest request) {
+    public String projectFavorite(Long projectId, HttpServletRequest servletRequest) {
 
-        Project project = projectRepository.findByProjectId(request.getProjectId());
+        Project project = projectRepository.findByProjectId(projectId);
 
-        project.addProjectLike(request.getUserId());
+        project.addProjectLike(jwtService.getUserIdFromToken(servletRequest));
         project.updateFavoriteCount(1);
 
         return "프로젝트 찜하기 완료";
@@ -31,34 +33,34 @@ public class FavoriteService {
     }
 
     // 프로젝트 찜하기 취소
-    public String projectFavoriteCancel(Long projectId, Long userId) {
+    public String projectFavoriteCancel(Long projectId, HttpServletRequest servletRequest) {
 
         Project project = projectRepository.findByProjectId(projectId);
 
         project.updateFavoriteCount(-1);
-        project.getProjectLike().remove(userId);
+        project.getProjectLike().remove(jwtService.getUserIdFromToken(servletRequest));
 
         return "프로젝트 찜하기 취소 완료";
 
     }
 
-    public String userFavorite(FavoriteRequest request) {
+    public String userFavorite(Long favoriteId, HttpServletRequest servletRequest) {
 
-        User user = peopleRepository.findUserByUserId(request.getFavoriteId());
+        User user = peopleRepository.findUserByUserId(favoriteId);
 
-        user.addProjectLike(request.getUserId());
+        user.addUserLike(jwtService.getUserIdFromToken(servletRequest));
         user.updateFavoriteCount(1);
 
         return "유저 찜하기 완료";
 
     }
 
-    public String userFavoriteCancel(Long favoriteId, Long userId) {
+    public String userFavoriteCancel(Long favoriteId, HttpServletRequest servletRequest) {
 
         User user = peopleRepository.findUserByUserId(favoriteId);
 
         user.updateFavoriteCount(-1);
-        user.getUserLike().remove(userId);
+        user.getUserLike().remove(jwtService.getUserIdFromToken(servletRequest));
 
         return "유저 찜하기 취소 완료";
 

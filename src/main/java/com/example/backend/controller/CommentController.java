@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.dto.request.project.CommentRequestDto;
 import com.example.backend.service.CommentService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +15,8 @@ public class CommentController {
 
     // 댓글 작성
     @PostMapping("/comments/{projectId}")
-    public CommonApiResponse<?> postComment(@PathVariable Long projectId, @RequestBody CommentRequestDto request) {
-        return new CommonApiResponse<>("success", commentService.postComment(projectId, request));
+    public CommonApiResponse<?> postComment(@PathVariable Long projectId, @RequestBody String content, HttpServletRequest servletRequest) {
+        return new CommonApiResponse<>("success", commentService.postComment(projectId, content, servletRequest));
     }
 
     // 댓글 목록 가져오기
@@ -24,16 +25,16 @@ public class CommentController {
         return new CommonApiResponse<>("success", commentService.getComments(projectId, page, size));
     }
 
-    // 댓글 수절
+    // 댓글 수정
     @PatchMapping("/comments/{projectId}")
-    public CommonApiResponse<?> updateComment(@PathVariable Long projectId, @RequestBody CommentRequestDto request) {
-        return new CommonApiResponse<>("success", commentService.updateComment(projectId, request));
+    public CommonApiResponse<?> updateComment(@PathVariable Long projectId, @RequestBody CommentRequestDto request, HttpServletRequest servletRequest) {
+        return new CommonApiResponse<>("success", commentService.updateComment(projectId, request, servletRequest));
     }
 
     // 댓글 삭제
     @DeleteMapping("/comments/{projectId}")
-    public CommonApiResponse<?> deleteComment(@PathVariable Long projectId, @RequestParam Long userId, @RequestParam Long commentId) {
-        return new CommonApiResponse<>("success", commentService.deleteComment(projectId, userId, commentId));
+    public CommonApiResponse<?> deleteComment(@PathVariable Long projectId, @RequestParam Long commentId, HttpServletRequest servletRequest) {
+        return new CommonApiResponse<>("success", commentService.deleteComment(projectId, commentId, servletRequest));
     }
 
 }

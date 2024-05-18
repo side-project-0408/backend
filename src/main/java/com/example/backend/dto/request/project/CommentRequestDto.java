@@ -7,10 +7,6 @@ public class CommentRequestDto {
 
     private Long commentId;
 
-    private Long userId;
-
     private String content;
-
-    private int size;
 
 }

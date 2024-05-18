@@ -9,8 +9,6 @@ import java.util.List;
 @Getter
 public class ProjectRequestDto {
 
-    private Long createdId;
-
     private String title;
 
     private String projectFileUrl;
