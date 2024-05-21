@@ -89,7 +89,7 @@ class MyPageControllerTest {
                 "1",
                 "블로그 링크",
                 "프로젝트 구인 중",
-                false);
+                false, "aaa@gmail.com");
 
         peopleRepository.save(user);
 
