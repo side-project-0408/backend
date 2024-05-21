@@ -9,6 +9,7 @@ import com.amazonaws.util.IOUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class AwsS3Service {
 
     private final AmazonS3Client amazonS3Client;
@@ -72,7 +74,11 @@ public class AwsS3Service {
     //파일의 public url을 이용하여 S3에서 해당 이미지 제거
 
     public void deleteFileFromS3(String fileAddress) {
+        if(fileAddress.isEmpty() || fileAddress == null) return;
+
         String key = getKeyFromFileAddress(fileAddress);
+        if(key.equals("default_images_0520.jpg")) return;
+
         try {
             amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, key));
         } catch (Exception e) {
@@ -80,6 +86,7 @@ public class AwsS3Service {
         }
     }
 
+    //url 값으로 잘라주기
     private String getKeyFromFileAddress(String fileAddress) {
         try {
             URL url = new URL(fileAddress);

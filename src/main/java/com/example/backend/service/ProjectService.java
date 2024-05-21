@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -33,19 +34,20 @@ public class ProjectService {
     private final JwtService jwtService;
 
     // 프로젝트 저장
-    public String postProject(ProjectRequestDto request, HttpServletRequest servletRequest) throws IOException {
+    public String postProject(ProjectRequestDto request, MultipartFile file, HttpServletRequest servletRequest) throws IOException {
 
         List<Recruit> recruits = new ArrayList<>();
 
         String position = "";
-
-        String fileUrl = awsS3Service.upload(request.getFile());
+        String fileUrl = "";
+        if(!file.isEmpty() || file == null) {
+            fileUrl = awsS3Service.upload(file);
+        }
 
         Project project = Project.builder()
                 .user(User.builder().userId(jwtService.getUserIdFromToken(servletRequest)).build())
                 .title(request.getTitle())
-                .projectFileUrl(request.getProjectFileUrl())
-                //.projectFileUrl(fileUrl)
+                .projectFileUrl(fileUrl)
                 .deadline(request.getDeadline())
                 .softSkill(request.getSoftSkill())
                 .importantQuestion(request.getImportantQuestion())
@@ -140,7 +142,8 @@ public class ProjectService {
     }
 
     // 프로젝트 수정
-    public String updateProject(Long projectId, ProjectRequestDto request, HttpServletRequest servletRequest) {
+    public String updateProject(Long projectId, ProjectRequestDto request, MultipartFile file,
+                                HttpServletRequest servletRequest) throws IOException {
 
         Project project = projectRepository.findByProjectId(projectId);
 
@@ -150,6 +153,13 @@ public class ProjectService {
         List<Recruit> recruits = project.getRecruits();
 
         String position = "";
+        String fileUrl = "";
+
+        if(!file.isEmpty() || file == null) {
+            awsS3Service.deleteFileFromS3(project.getProjectFileUrl()); //기존 파일 삭제
+            fileUrl = awsS3Service.upload(file);
+        }
+
 
         if (!recruits.isEmpty()) recruits.clear();
 
@@ -164,7 +174,7 @@ public class ProjectService {
         }
 
         project.updateTitle(request.getTitle());
-        project.updateProjectFileUrl(request.getProjectFileUrl());
+        project.updateProjectFileUrl(fileUrl);
         project.updateDeadline(request.getDeadline());
         project.updateImportantQuestion(request.getImportantQuestion());
         project.updateSoftSkill(request.getSoftSkill());

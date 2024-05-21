@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UpdateUserRequestDto {
 
     private String nickname;
-    private String userFileUrl;
     private String techStack;
     private String position;
     private boolean employmentStatus;
@@ -18,5 +17,5 @@ public class UpdateUserRequestDto {
     private String content;
     private String softSkill;
     private String importantQuestion;
-    private MultipartFile userFile;
+    private String email;
 }

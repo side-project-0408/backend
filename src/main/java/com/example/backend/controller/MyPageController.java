@@ -9,12 +9,14 @@ import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.response.people.PeopleDetailResponseDto;
 import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.repository.project.ProjectRepository;
+import com.example.backend.service.AwsS3Service;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.PeopleService;
 import com.example.backend.service.ProjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -29,9 +31,15 @@ public class MyPageController {
 
     private final JwtService jwtService;
 
+    private final AwsS3Service awsS3Service;
+
     //마이페이지 내 정보 조회
-    @GetMapping("/users/{userId}")
-    public CommonApiResponse<PeopleDetailResponseDto> getUser(@PathVariable("userId") Long userId) {
+    @GetMapping("/users")
+    public CommonApiResponse<PeopleDetailResponseDto> getUser(HttpServletRequest servletRequest) {
+
+        // JWT 토큰에서 userId 추출
+        Long userId = jwtService.getUserIdFromToken(servletRequest);
+
         User user = peopleRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
 
@@ -40,16 +48,23 @@ public class MyPageController {
     }
 
     //마이페이지 내 정보 수정
-    @PatchMapping("/users/{userId}")
-    public CommonApiResponse<?> editUser(@PathVariable("userId") Long userId, @RequestBody UpdateUserRequestDto dto) throws IOException {
+    @PatchMapping("/users")
+    public CommonApiResponse<?> editUser(@RequestPart UpdateUserRequestDto dto,
+                                         @RequestPart MultipartFile file,
+                                         HttpServletRequest servletRequest) throws IOException {
 
-        return new CommonApiResponse<>("success", peopleService.update(userId, dto));
+        Long userId = jwtService.getUserIdFromToken(servletRequest);
+
+        return new CommonApiResponse<>("success", peopleService.update(userId, dto, file));
     }
 
     //내가 작성한 프로젝트 수정
     @PatchMapping("/posts/{projectId}")
-    public CommonApiResponse<?> updateProject(@PathVariable("projectId") Long projectId, @RequestBody ProjectRequestDto request, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>("success", projectService.updateProject(projectId, request, servletRequest));
+    public CommonApiResponse<?> updateProject(@PathVariable("projectId") Long projectId,
+                                              @RequestPart ProjectRequestDto request,
+                                              @RequestPart (required = false) MultipartFile file,
+                                              HttpServletRequest servletRequest) throws IOException {
+        return new CommonApiResponse<>("success", projectService.updateProject(projectId, request, file, servletRequest));
     }
 
 
@@ -61,6 +76,10 @@ public class MyPageController {
         if(project == null) {
             throw new RuntimeException("해당 프로젝트는 존재하지 않습니다.");
         }
+        if(!project.getProjectFileUrl().isEmpty() || project.getProjectFileUrl() != null) {
+            awsS3Service.deleteFileFromS3(project.getProjectFileUrl());
+        }
+
         projectRepository.delete(project);
 
         return new CommonApiResponse<>("success", "프로젝트가 삭제되었습니다.");

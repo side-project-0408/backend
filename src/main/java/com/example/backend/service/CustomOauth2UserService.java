@@ -39,7 +39,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     private User saveOrUpdate(OAuthAttributes attributes){
         String nickname = attributes.getNickname();
 
-        String picture = Optional.ofNullable(attributes.getPicture()).orElse("기본 프로필 사진 주소");
+        String picture = Optional.ofNullable(attributes.getPicture()).orElse("https://imagebucket0515.s3.ap-northeast-2.amazonaws.com/default_images_0520.jpg");
         String email = Optional.ofNullable(attributes.getEmail()).orElse(null);
         User userOptional = peopleRepository.findBySocialId(attributes.getNameAttributeKey()).orElse(null);
 

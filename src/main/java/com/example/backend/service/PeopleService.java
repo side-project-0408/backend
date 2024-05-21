@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -20,29 +22,31 @@ public class PeopleService {
     private final PeopleRepository peopleRepository;
     private final AmazonS3 amazonS3;
 
+    private final AwsS3Service awsS3Service;
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    public String update(Long userId, UpdateUserRequestDto dto) throws IOException {
+    public String update(Long userId,
+                         @RequestPart UpdateUserRequestDto dto,
+                         @RequestPart MultipartFile file) throws IOException {
         User user = peopleRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("해당 사용자는 존재하지 않습니다."));
 
-        String originalFilename = dto.getUserFile().getOriginalFilename();
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(dto.getUserFile().getSize());
-        metadata.setContentType(dto.getUserFile().getContentType());
 
-        amazonS3.putObject(bucket, originalFilename, dto.getUserFile().getInputStream(), metadata);
+        awsS3Service.deleteFileFromS3(user.getUserFileUrl());
+        String fileUrl = awsS3Service.upload(file);
 
         user.updateUser(dto.getNickname(),
                 dto.getPosition(),
-                dto.getUserFileUrl(),
+                fileUrl,
                 dto.isEmploymentStatus(),
                 dto.getTechStack(),
                 dto.getSoftSkill(),
                 dto.getYear(),
                 dto.getLinks(),
                 dto.getContent(),
-                dto.isAlarmStatus());
+                dto.isAlarmStatus(),
+                dto.getEmail());
 
         peopleRepository.save(user);
 
