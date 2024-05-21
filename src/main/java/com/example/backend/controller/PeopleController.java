@@ -55,18 +55,21 @@ public class PeopleController {
         return new CommonApiResponse<>("success", peopleRepository.findHotPeoples(dto));
     }
 
-    @GetMapping("/users/favorite/{userId}")
-    public CommonApiResponse<List<PeopleResponseDto>> getFavoritePeoples(@PathVariable("peopleId") Long peopleId,
+    @GetMapping("/users/favorite")
+    public CommonApiResponse<List<PeopleResponseDto>> getFavoritePeoples(HttpServletRequest servletRequest,
                                                                          @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
-        return new CommonApiResponse<>("success", peopleRepository.findFavoritePeoples(peopleId, pageable));
+
+        Long userId = jwtService.getUserIdFromToken(servletRequest);
+        return new CommonApiResponse<>("success", peopleRepository.findFavoritePeoples(userId, pageable));
     }
 
-    @PostMapping("/proposal/send")
-    public CommonApiResponse<?> sendProposal(HttpServletRequest servletRequest) throws Exception {
+    @PostMapping("/proposal/send/{peopleId}")
+    public CommonApiResponse<?> sendProposal(@PathVariable("peopleId") Long receiver,
+                                             HttpServletRequest servletRequest) throws Exception {
 
-        long userId = jwtService.getUserIdFromToken(servletRequest);
+        Long proposer = jwtService.getUserIdFromToken(servletRequest); //보내는 사람
 
-        proposalService.sendProposal(userId);
+        proposalService.sendProposal(receiver, proposer);
         return new CommonApiResponse<>("success", "제안 신청이 성공하였습니다.");
     }
 }
