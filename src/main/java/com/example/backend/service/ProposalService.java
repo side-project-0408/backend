@@ -25,9 +25,10 @@ public class ProposalService {
     private final JavaMailSender javaMailSender;
 
 
-    public String save(Long userId, String content) {
+    public String save(Long proposer, String content, Long receiver) {
         Proposal proposal = Proposal.builder()
-                .proposerUser(User.builder().userId(userId).build())
+                .proposerUser(User.builder().userId(proposer).build())
+                .recievedUser(User.builder().userId(receiver).build())
                 .message(content)
                 .createdAt(LocalDateTime.now()).build();
         proposalRepository.save(proposal);
@@ -82,6 +83,6 @@ public class ProposalService {
         } catch (Exception e) {
             throw new RuntimeException("이메일을 전송할 수 없습니다.");
         }
-        save(proposer, content);
+        save(proposer, content, receiver);
     }
 }
