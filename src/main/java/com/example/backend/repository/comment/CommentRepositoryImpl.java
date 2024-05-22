@@ -10,7 +10,7 @@ import org.springframework.data.domain.SliceImpl;
 
 import java.util.List;
 
-import static com.example.backend.domain.QComment.*;
+import static com.example.backend.domain.QComment.comment;
 
 @RequiredArgsConstructor
 public class CommentRepositoryImpl implements CommentRepositoryCustom {
@@ -29,12 +29,12 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                         comment.content,
                         comment.createdAt,
                         comment.lastModifiedAt))
-                    .from(comment)
-                    .where(comment.project.projectId.eq(projectId))
-                    .orderBy(comment.createdAt.asc())
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize() + 1)
-                    .fetch();
+                .from(comment)
+                .where(comment.project.projectId.eq(projectId))
+                .orderBy(comment.createdAt.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
 
         boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {

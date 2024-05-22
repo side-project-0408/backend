@@ -11,14 +11,11 @@ import com.example.backend.repository.project.ProjectRepository;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.KakaoMessageService;
 import com.example.backend.service.ProposalService;
-import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
