@@ -4,8 +4,10 @@ import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.service.ProjectService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -17,14 +19,15 @@ public class ProjectController {
 
     // 프로젝트 저장
     @PostMapping("/projects")
-    public CommonApiResponse<?> postProject(@RequestBody ProjectRequestDto request) throws IOException {
-        return new CommonApiResponse<>("success", projectService.postProject(request));
+    public CommonApiResponse<?> postProject(@RequestPart ProjectRequestDto request,
+                                            @RequestPart(required = false) MultipartFile file,
+                                            HttpServletRequest servletRequest) throws IOException {
+        return new CommonApiResponse<>("success", projectService.postProject(request, file, servletRequest));
     }
 
     // 프로젝트 목록 가져오기
     @GetMapping("/projects")
     public CommonApiResponse<?> getProjects(@ModelAttribute ProjectSearchDto request) {
-        System.out.println(request.toString());
         return new CommonApiResponse<>("success", projectService.findProjects(request));
     }
 

@@ -14,8 +14,8 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-import static com.example.backend.domain.QProject.*;
-import static com.example.backend.domain.QRecruit.*;
+import static com.example.backend.domain.QProject.project;
+import static com.example.backend.domain.QRecruit.recruit;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 

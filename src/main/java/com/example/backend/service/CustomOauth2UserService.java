@@ -37,18 +37,17 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
     // 유저 생성 및 수정 서비스 로직
     private User saveOrUpdate(OAuthAttributes attributes){
-
         String nickname = attributes.getNickname();
 
-        String picture = Optional.ofNullable(attributes.getPicture()).orElse(null);
+        String picture = Optional.ofNullable(attributes.getPicture()).orElse("https://imagebucket0515.s3.ap-northeast-2.amazonaws.com/default_images_0520.jpg");
         String email = Optional.ofNullable(attributes.getEmail()).orElse(null);
+        User userOptional = peopleRepository.findBySocialId(attributes.getNameAttributeKey()).orElse(null);
 
         // 유저가 등록 되지 않은 상태
-        if (peopleRepository.findBySocialId(attributes.getNameAttributeKey()) == null) {
-
+        if (userOptional == null) {
             // 닉네임 중복 검증, 새로운 닉네임 부여
             if (peopleRepository.findByNickname(nickname) != null) {
-                nickname += (int)(Math.random() * 100000 + 1);
+                nickname += (int)(Math.random() * 10000000 + 1);
             }
 
             User user = User.builder()
@@ -66,9 +65,8 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         }
 
-        return peopleRepository.findBySocialId(attributes.getNameAttributeKey());
+        return userOptional;
 
     }
-
 
 }

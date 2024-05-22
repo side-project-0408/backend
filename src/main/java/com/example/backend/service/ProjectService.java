@@ -1,6 +1,5 @@
 package com.example.backend.service;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.Recruit;
@@ -11,13 +10,14 @@ import com.example.backend.dto.request.project.RecruitRequestDto;
 import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
 import com.example.backend.repository.project.ProjectRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,20 +31,22 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final AmazonS3Client amazonS3Client;
     private final AwsS3Service awsS3Service;
-
+    private final JwtService jwtService;
 
     // 프로젝트 저장
-    public String postProject(ProjectRequestDto request) throws IOException {
+    public String postProject(ProjectRequestDto request, MultipartFile file, HttpServletRequest servletRequest) throws IOException {
 
         List<Recruit> recruits = new ArrayList<>();
 
         String position = "";
+        String fileUrl = "";
+        if(!file.isEmpty() || file == null) {
+            fileUrl = awsS3Service.upload(file);
+        }
 
-        String fileUrl = awsS3Service.upload(request.getFile());
-
-        Project project = Project.builder().user(User.builder().userId(request.getCreatedId()).build())
+        Project project = Project.builder()
+                .user(User.builder().userId(jwtService.getUserIdFromToken(servletRequest)).build())
                 .title(request.getTitle())
-                //.projectFileUrl(request.getProjectFileUrl())
                 .projectFileUrl(fileUrl)
                 .deadline(request.getDeadline())
                 .softSkill(request.getSoftSkill())
@@ -128,25 +130,36 @@ public class ProjectService {
         return checkRecent(projectRepository.findHotProjects(size));
     }
 
-    public List<ProjectResponseDto> findFavoriteProjects(Long userId, ProjectSearchDto request) {
+    public List<ProjectResponseDto> findFavoriteProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        return checkRecent(projectRepository.findFavoriteProjects(userId, pageable));
+        return checkRecent(projectRepository.findFavoriteProjects(jwtService.getUserIdFromToken(servletRequest), pageable));
     }
 
     // 내가 작성한 프로젝트 가져오기
-    public List<ProjectResponseDto> findMyProjects(Long userId, ProjectSearchDto request) {
+    public List<ProjectResponseDto> findMyProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        return checkRecent(projectRepository.findMyProjects(userId, pageable));
+        return checkRecent(projectRepository.findMyProjects(jwtService.getUserIdFromToken(servletRequest), pageable));
     }
 
     // 프로젝트 수정
-    public String updateProject(Long projectId, ProjectRequestDto request) {
+    public String updateProject(Long projectId, ProjectRequestDto request, MultipartFile file,
+                                HttpServletRequest servletRequest) throws IOException {
 
         Project project = projectRepository.findByProjectId(projectId);
+
+        if(!(project.getUser().getUserId() == jwtService.getUserIdFromToken(servletRequest)))
+            throw new RuntimeException("프로젝트 작성자가 아닙니다.");
 
         List<Recruit> recruits = project.getRecruits();
 
         String position = "";
+        String fileUrl = "";
+
+        if(!file.isEmpty() || file == null) {
+            awsS3Service.deleteFileFromS3(project.getProjectFileUrl()); //기존 파일 삭제
+            fileUrl = awsS3Service.upload(file);
+        }
+
 
         if (!recruits.isEmpty()) recruits.clear();
 
@@ -161,7 +174,7 @@ public class ProjectService {
         }
 
         project.updateTitle(request.getTitle());
-        project.updateProjectFileUrl(request.getProjectFileUrl());
+        project.updateProjectFileUrl(fileUrl);
         project.updateDeadline(request.getDeadline());
         project.updateImportantQuestion(request.getImportantQuestion());
         project.updateSoftSkill(request.getSoftSkill());

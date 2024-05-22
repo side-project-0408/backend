@@ -9,11 +9,7 @@ import java.util.List;
 @Getter
 public class ProjectRequestDto {
 
-    private Long createdId;
-
     private String title;
-
-    private String projectFileUrl;
 
     private LocalDate deadline;
 
@@ -26,7 +22,5 @@ public class ProjectRequestDto {
     private String description;
 
     private List<RecruitRequestDto> recruit;
-
-    private MultipartFile file;
 
 }

@@ -65,7 +65,7 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.techStack,
                         user.softSkill))
                 .from(user)
-                .orderBy(user.viewCount.desc()) //TODO 최신순, 인기순 목록 어떻게 구현할지
+                .orderBy(user.viewCount.add(user.favoriteCount).desc())
                 .offset(dto.getPage())
                 .limit(10)
                 .fetch();

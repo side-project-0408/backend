@@ -31,8 +31,8 @@ public class User {
 
     private String nickname;
 
+    @Column(nullable = false)
     private String email;
-
     private String position;
 
     @Column(name = "file_url")
@@ -94,12 +94,12 @@ public class User {
         this.favoriteCount += count;
     }
 
-    public void addProjectLike(Long userId) {
+    public void addUserLike(Long userId) {
         this.userLike.add(userId);
     }
 
     public void updateUser(String nickname, String position, String userFileUrl, boolean employmentStatus, String techStack,
-                String softSkill, String year, String links, String content, boolean alarmStatus) {
+                String softSkill, String year, String links, String content, boolean alarmStatus, String email) {
         this.nickname = nickname;
         this.position = position;
         this.userFileUrl = userFileUrl;
@@ -110,5 +110,6 @@ public class User {
         this.links = links;
         this.content = content;
         this.alarmStatus = alarmStatus;
+        this.email = email;
     }
 }

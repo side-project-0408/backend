@@ -47,11 +47,11 @@ public class SecurityConfig {
                         .requestMatchers(
                                 new AntPathRequestMatcher("/oauth2/success"),
                                 new AntPathRequestMatcher("/projects", HttpMethod.GET.toString()),
-                                new AntPathRequestMatcher("/comments/{projectId}", HttpMethod.GET.toString()),
-                                new AntPathRequestMatcher("/projects/{projectId}"),
+                                new AntPathRequestMatcher("/comments/**", HttpMethod.GET.toString()),
+                                new AntPathRequestMatcher("/projects/**"),
                                 new AntPathRequestMatcher("/projects/hot"),
                                 new AntPathRequestMatcher("/peoples"),
-                                new AntPathRequestMatcher("/peoples/{peopleId}"),
+                                new AntPathRequestMatcher("/peoples/**"),
                                 new AntPathRequestMatcher("/peoples/hot")
                         ).permitAll()
                         .anyRequest().authenticated())
@@ -66,8 +66,5 @@ public class SecurityConfig {
         return http.build();
 
     }
-
-
-
 
 }
