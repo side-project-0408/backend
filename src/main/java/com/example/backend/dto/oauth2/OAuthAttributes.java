@@ -17,9 +17,9 @@ public class OAuthAttributes {
     private String email;
     private String picture;
 
-    public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes){
+    public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
 
-        if("kakao".equals(registrationId)){
+        if ("kakao".equals(registrationId)) {
             return ofKakao(registrationId, userNameAttributeName, attributes);
         }
 
@@ -28,8 +28,8 @@ public class OAuthAttributes {
     }
 
     private static OAuthAttributes ofKakao(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
-        Map<String, Object> kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
-        Map<String, Object> kakaoProfile = (Map<String, Object>)kakaoAccount.get("profile");
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
 
         return OAuthAttributes.builder()
                 .nickname((String) kakaoProfile.get("nickname"))

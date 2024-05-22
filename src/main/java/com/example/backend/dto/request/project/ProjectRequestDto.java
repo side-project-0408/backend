@@ -11,8 +11,6 @@ public class ProjectRequestDto {
 
     private String title;
 
-    private String projectFileUrl;
-
     private LocalDate deadline;
 
     private String techStack;
@@ -24,7 +22,5 @@ public class ProjectRequestDto {
     private String description;
 
     private List<RecruitRequestDto> recruit;
-
-    private MultipartFile file;
 
 }

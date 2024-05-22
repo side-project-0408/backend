@@ -39,7 +39,7 @@ public class TokenAuthFilter extends OncePerRequestFilter {
         if (jwtService.validToken(token)) {
             UsernamePasswordAuthenticationToken authentication = jwtService.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        }else {
+        } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 상태 코드 401 Unauthorized
             response.getWriter().write("토큰 유효 기간 지남"); // 메시지 전송
         }

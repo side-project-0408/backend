@@ -16,4 +16,7 @@ public interface PeopleRepository extends JpaRepository<User, Long>, PeopleRepos
     User findByNickname(String nickname);
 
     Optional<User> findBySocialId(String nickname);
+
+    @Query("SELECT u.email FROM User u WHERE u.userId = :userId")
+    String findEmailByUserId(Long userId);
 }

@@ -66,7 +66,7 @@ public class Project {
     @Column(name = "user_id")
     private Set<Long> projectLike = new HashSet<>();
 
-    @ManyToOne(fetch = LAZY, cascade = PERSIST)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "created_id")
     private User user;
 

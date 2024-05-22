@@ -3,11 +3,9 @@ package com.example.backend.controller;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.Recruit;
 import com.example.backend.domain.User;
-import com.example.backend.dto.request.people.UpdateUserRequestDto;
 import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.repository.project.ProjectRepository;
 import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,8 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class MyPageControllerTest {
@@ -56,7 +53,7 @@ class MyPageControllerTest {
         Project findProject = projectRepository.findByProjectId(project.getProjectId());
 
         Project result = projectRepository.findByUserUserIdAndProjectId(findProject.getUser().getUserId(), findProject.getProjectId());
-        if(project == null) {
+        if (project == null) {
             throw new RuntimeException("해당 프로젝트는 존재하지 않습니다.");
         }
         projectRepository.delete(result);
@@ -89,7 +86,7 @@ class MyPageControllerTest {
                 "1",
                 "블로그 링크",
                 "프로젝트 구인 중",
-                false);
+                false, "aaa@gmail.com");
 
         peopleRepository.save(user);
 
