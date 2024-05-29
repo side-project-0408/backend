@@ -54,17 +54,18 @@ public class TokenAuthFilter extends OncePerRequestFilter {
         String[] excludePath = {
                 "/favicon.ico",
                 "/error",
-                "/oauth2/success",
-                "/projects/**",
-                "/projects/hot",
-                "/peoples",
-                "/peoples/**",
-                "/peoples/hot"
+                "/oauth2/success"
         };
 
         String[] excludeGetPath = {
                 "/projects",
-                "/comments/**"
+                "/projects/**",
+                //"/projects/hot",
+                "/comments/**",
+                "/peoples",
+                "/peoples/**",
+                //"/peoples/hot",
+                "/users/nickname"
         };
 
         String path = request.getRequestURI();
