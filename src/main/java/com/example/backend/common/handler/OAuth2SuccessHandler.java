@@ -18,7 +18,7 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtService jwtService;
-    private static final String URI = "/oauth2/success";
+    private static final String URI = "http://localhost:3000/kakaoLogin";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,

@@ -13,6 +13,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -25,26 +30,27 @@ public class SecurityConfig {
 
     private final TokenAuthFilter jwtAuthFilter;
 
-    private final CorsConfig config;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
 
-                .csrf((auth) -> auth.disable())
+                .csrf(csrf -> csrf.disable())
 
-                .formLogin((auth) -> auth.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                .httpBasic((auth) -> auth.disable())
+                .formLogin(formLogin -> formLogin.disable())
 
-                .oauth2Login((oauth2) -> oauth2
+                .httpBasic(httpBasic -> httpBasic.disable())
+
+                .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler))
 
-                .authorizeHttpRequests((auth) -> auth
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                new AntPathRequestMatcher("/"),
                                 new AntPathRequestMatcher("/oauth2/success"),
                                 new AntPathRequestMatcher("/projects", HttpMethod.GET.toString()),
                                 new AntPathRequestMatcher("/comments/**", HttpMethod.GET.toString()),
@@ -52,19 +58,30 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/projects/hot"),
                                 new AntPathRequestMatcher("/peoples"),
                                 new AntPathRequestMatcher("/peoples/**"),
-                                new AntPathRequestMatcher("/peoples/hot")
+                                new AntPathRequestMatcher("/peoples/hot"),
+                                new AntPathRequestMatcher("/users/nickname")
                         ).permitAll()
                         .anyRequest().authenticated())
 
-                .addFilter(config.corsFilter())
-
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
-                .sessionManagement((session) -> session
+                .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
 
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Authorization-refresh", "Cache-Control", "Content-Type"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 }

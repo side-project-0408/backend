@@ -19,6 +19,7 @@ import static jakarta.persistence.FetchType.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "project")
 public class Project {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

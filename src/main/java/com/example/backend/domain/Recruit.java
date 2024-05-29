@@ -13,6 +13,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "recruit")
 public class Recruit {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
