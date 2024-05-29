@@ -116,12 +116,12 @@ public class PeopleService {
 
     }
 
-    public String checkNickname(String nickname) {
+    public Boolean checkNickname(String nickname) {
 
         if(peopleRepository.findByNickname(nickname) == null)
-            return "사용 가능";
+            return true;
 
-        return "사용 불가";
+        return false;
 
     }
 

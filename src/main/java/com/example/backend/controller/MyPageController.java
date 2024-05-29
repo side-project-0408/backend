@@ -106,7 +106,7 @@ public class MyPageController {
     //인증 메일 확인
     @GetMapping("/verificationCode")
     public CommonApiResponse<?> checkVerificationCode(@RequestParam String email, @RequestParam String code) {
-        return new CommonApiResponse<>("success", peopleService.checkVerificationCode(email, code));
+        return new CommonApiResponse<>("", peopleService.checkVerificationCode(email, code));
     }
 
     //닉네임 중복 확인
