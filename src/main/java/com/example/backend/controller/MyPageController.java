@@ -97,4 +97,22 @@ public class MyPageController {
         return new CommonApiResponse<>("success", projectService.findMyProjects(servletRequest, request));
     }
 
+    //인증 메일 보내기
+    @PostMapping("/verificationCode")
+    public CommonApiResponse<?> sendVerificationCode(@RequestParam String email) {
+        return new CommonApiResponse<>("", peopleService.sendVerificationCode(email));
+    }
+
+    //인증 메일 확인
+    @GetMapping("/verificationCode")
+    public CommonApiResponse<?> checkVerificationCode(@RequestParam String email, @RequestParam String code) {
+        return new CommonApiResponse<>("", peopleService.checkVerificationCode(email, code));
+    }
+
+    //닉네임 중복 확인
+    @GetMapping("/users/nickname")
+    public CommonApiResponse<?> checkNickname(@RequestParam String nickname) {
+        return new CommonApiResponse<>("", peopleService.checkNickname(nickname));
+    }
+
 }

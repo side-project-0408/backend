@@ -50,6 +50,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                new AntPathRequestMatcher("/"),
                                 new AntPathRequestMatcher("/oauth2/success"),
                                 new AntPathRequestMatcher("/projects", HttpMethod.GET.toString()),
                                 new AntPathRequestMatcher("/comments/**", HttpMethod.GET.toString()),
@@ -57,7 +58,8 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/projects/hot"),
                                 new AntPathRequestMatcher("/peoples"),
                                 new AntPathRequestMatcher("/peoples/**"),
-                                new AntPathRequestMatcher("/peoples/hot")
+                                new AntPathRequestMatcher("/peoples/hot"),
+                                new AntPathRequestMatcher("/users/nickname")
                         ).permitAll()
                         .anyRequest().authenticated())
 
@@ -73,7 +75,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://*"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Authorization-refresh", "Cache-Control", "Content-Type"));
