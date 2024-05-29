@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "token")
 public class TokenBlackList {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
