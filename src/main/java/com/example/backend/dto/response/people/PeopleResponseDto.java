@@ -20,9 +20,11 @@ public class PeopleResponseDto {
 
     private String softSkill;
 
+    private Long userId;
+
     @QueryProjection
     public PeopleResponseDto(String nickname, int favoriteCount, int viewCount, String position, String userFileUrl,
-                             String techStack, String softSkill) {
+                             String techStack, String softSkill, Long userId) {
         this.nickname = nickname;
         this.favoriteCount = favoriteCount;
         this.viewCount = viewCount;
@@ -30,5 +32,6 @@ public class PeopleResponseDto {
         this.userFileUrl = userFileUrl;
         this.techStack = techStack;
         this.softSkill = softSkill;
+        this.userId = userId;
     }
 }

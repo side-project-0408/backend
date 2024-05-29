@@ -41,7 +41,7 @@ public class ProposalService {
 
         String email = peopleRepository.findEmailByUserId(receiver);
 
-        String from = "yuriouo7@gmail.com"; //프로젝트 이메일로 변경 필요
+        String from = "matchmate25@gmail.com"; //프로젝트 이메일로 변경 필요
         String to = email; //받는 사람 이메일 (클릭된 people 페이지 아이디로 이메일 구하기)
         String subject = "[매치메이트] 제안이 도착했습니다.";
 
@@ -71,7 +71,7 @@ public class ProposalService {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        try {
+//        try {
             helper.setSubject(subject);
             helper.setText(content, true);
             helper.setFrom(from);
@@ -80,9 +80,9 @@ public class ProposalService {
             message.setHeader("Content-Type", "text/html; charset=UTF-8");
             message.setContent(content, "text/html; charset=UTF-8");
             javaMailSender.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException("이메일을 전송할 수 없습니다.");
-        }
+//        } catch (Exception e) {
+//            throw new RuntimeException("이메일을 전송할 수 없습니다.");
+//        }
         save(proposer, content, receiver);
     }
 }
