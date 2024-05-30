@@ -9,16 +9,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
 public class TokenAuthFilter extends OncePerRequestFilter {
 
-    public final JwtService jwtService;
+    private final JwtService jwtService;
+
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -51,13 +54,13 @@ public class TokenAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 
-        String[] excludePath = {
+        String[] excludePaths = {
                 "/favicon.ico",
                 "/error",
-                "/oauth2/success"
+                "/oauth2/success",
         };
 
-        String[] excludeGetPath = {
+        String[] excludeGetPaths = {
                 "/projects",
                 "/projects/**",
                 //"/projects/hot",
@@ -71,11 +74,23 @@ public class TokenAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        if (method.equalsIgnoreCase("GET") && Arrays.stream(excludeGetPath).anyMatch(path::startsWith))
-            return Arrays.stream(excludeGetPath).anyMatch(path::startsWith);
+        // GET 메소드에 대한 경로 제외 확인
+        if (method.equalsIgnoreCase("GET")) {
+            for (String exclude : excludeGetPaths) {
+                if (pathMatcher.match(exclude, path)) {
+                    return true;
+                }
+            }
+        }
 
-        return Arrays.stream(excludePath).anyMatch(path::startsWith);
+        // 다른 메소드에 대한 경로 제외 확인
+        for (String exclude : excludePaths) {
+            if (pathMatcher.match(exclude, path)) {
+                return true;
+            }
+        }
 
+        return false;
 
     }
 
