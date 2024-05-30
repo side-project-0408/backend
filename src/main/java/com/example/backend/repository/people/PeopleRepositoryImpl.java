@@ -42,7 +42,8 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.userFileUrl,
                         user.techStack,
                         user.softSkill,
-                        user.userId))
+                        user.userId,
+                        user.createdAt))
                 .from(user)
                 .where(techSizeEq(dto.getTechSize()),
                         positionEq(dto.getPosition()),
@@ -65,7 +66,8 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.userFileUrl,
                         user.techStack,
                         user.softSkill,
-                        user.userId))
+                        user.userId,
+                        user.createdAt))
                 .from(user)
                 .orderBy(user.viewCount.add(user.favoriteCount).desc())
                 .offset(dto.getPage())
@@ -86,7 +88,8 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.userFileUrl,
                         user.techStack,
                         user.softSkill,
-                        user.userId))
+                        user.userId,
+                        user.createdAt))
                 .from(user)
                 .where(user.userLike.contains(peopleId))
                 .orderBy(user.createdAt.desc())
