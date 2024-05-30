@@ -41,6 +41,7 @@ public class PeopleResponseDto {
         this.softSkill = softSkill;
         this.userId = userId;
         this.recent = isRecent(createdAt);
+        this.createdAt = createdAt;
     }
 
     public boolean isRecent(LocalDateTime createdAt) {
