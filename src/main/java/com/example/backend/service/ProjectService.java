@@ -71,8 +71,6 @@ public class ProjectService {
         project.updatePosition(position.substring(0, position.length() - 2));
         project.updateRecruit(recruits);
 
-
-
         projectRepository.save(project);
 
         return "프로젝트 저장 완료";
@@ -81,48 +79,14 @@ public class ProjectService {
 
     // 프로젝트 목록 가져오기
     public List<ProjectResponseDto> findProjects(ProjectSearchDto request) {
-
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-
-        ProjectSearchDto searchDto = ProjectSearchDto.builder()
-                .techStack(request.getTechStack())
-                .position(request.getPosition())
-                .keyword(request.getKeyword())
-                .sort(request.getSort())
-                .build();
-
-        return checkRecent(projectRepository.findProjects(pageable, searchDto));
-
+        return checkRecent(projectRepository.findProjects(pageable, request));
     }
 
     // 프로젝트 상세 정보 가져오기
     public ProjectDetailResponseDto findProject(Long projectId) {
-
         List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
-
-        if (content.isEmpty()) return null;
-
-        return ProjectDetailResponseDto.builder()
-                .projectId(content.get(0).getProjectId())
-                .userId(content.get(0).getUserId())
-                .nickname(content.get(0).getNickname())
-                .userFileUrl(content.get(0).getUserFileUrl())
-                .projectFileUrl(content.get(0).getProjectFileUrl())
-                .title(content.get(0).getTitle())
-                .techStack(content.get(0).getTechStack())
-                .softSkill(content.get(0).getSoftSkill())
-                .importantQuestion(content.get(0).getImportantQuestion())
-                .deadline(content.get(0).getDeadline())
-                .recruitment(content.get(0).getRecruitment())
-                .employmentStatus(content.get(0).getEmploymentStatus())
-                .viewCount(content.get(0).getViewCount())
-                .favoriteCount(content.get(0).getFavoriteCount())
-                .description(content.get(0).getDescription())
-                .createdAt(content.get(0).getCreatedAt())
-                .lastModifiedAt(content.get(0).getLastModifiedAt())
-                .recruit(content.get(0).getRecruit())
-                .build();
-
+        return (content.isEmpty()) ? null : content.get(0);
     }
 
     // 핫 프로젝트 목록 가져오기
