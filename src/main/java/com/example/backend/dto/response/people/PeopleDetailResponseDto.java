@@ -24,6 +24,8 @@ public class PeopleDetailResponseDto {
     private boolean employmentStatus;
     private boolean recent;
 
+    private String email;
+
     public PeopleDetailResponseDto(User user) {
         this.userId = user.getUserId();
         this.nickname = user.getNickname();
@@ -39,9 +41,10 @@ public class PeopleDetailResponseDto {
         this.content = user.getContent();
         this.employmentStatus = user.isEmploymentStatus();
         this.recent = isRecent(user.getCreatedAt());
+        this.email = user.getEmail();
     }
 
     public boolean isRecent(LocalDateTime createdAt) {
-        return ChronoUnit.DAYS.between(createdAt, LocalDateTime.now()) <= 7 ? true : false;
+        return ChronoUnit.DAYS.between(createdAt, LocalDateTime.now()) <= 1 ? true : false;
     }
 }

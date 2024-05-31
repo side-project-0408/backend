@@ -28,7 +28,7 @@ public class PeopleService {
     private String bucket;
     public String update(Long userId,
                          @RequestPart UpdateUserRequestDto dto,
-                         @RequestPart MultipartFile file) throws IOException {
+                         @RequestPart (required = false) MultipartFile file) throws IOException {
         User user = peopleRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("해당 사용자는 존재하지 않습니다."));
 

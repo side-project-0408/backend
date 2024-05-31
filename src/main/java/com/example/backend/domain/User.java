@@ -31,7 +31,6 @@ public class User {
 
     private String nickname;
 
-    @Column(nullable = false)
     private String email;
     private String position;
 
