@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.Recruit;
 import com.example.backend.domain.User;
+import com.example.backend.dto.request.project.ProjectPageResponseDto;
 import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.request.project.RecruitRequestDto;
@@ -12,6 +13,7 @@ import com.example.backend.dto.response.project.ProjectResponseDto;
 import com.example.backend.repository.project.ProjectRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -78,9 +80,11 @@ public class ProjectService {
     }
 
     // 프로젝트 목록 가져오기
-    public List<ProjectResponseDto> findProjects(ProjectSearchDto request) {
+    public ProjectPageResponseDto findProjects(ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        return checkRecent(projectRepository.findProjects(pageable, request));
+        Page<ProjectResponseDto> projectPage = projectRepository.findProjects(pageable, request);
+        List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
+        return new ProjectPageResponseDto(projects, projectPage.getTotalPages(), projectPage.getTotalElements());
     }
 
     // 프로젝트 상세 정보 가져오기
