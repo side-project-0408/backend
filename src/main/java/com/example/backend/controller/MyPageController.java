@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestController
 @RequiredArgsConstructor
 public class MyPageController {
@@ -44,7 +46,7 @@ public class MyPageController {
                 .orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
 
         PeopleDetailResponseDto dto = new PeopleDetailResponseDto(user);
-        return new CommonApiResponse<>("success", dto);
+        return new CommonApiResponse<>(OK, dto);
     }
 
     //마이페이지 내 정보 수정
@@ -55,7 +57,7 @@ public class MyPageController {
 
         Long userId = jwtService.getUserIdFromToken(servletRequest);
 
-        return new CommonApiResponse<>("success", peopleService.update(userId, dto, file));
+        return new CommonApiResponse<>(OK, peopleService.update(userId, dto, file));
     }
 
     //내가 작성한 프로젝트 수정
@@ -64,7 +66,7 @@ public class MyPageController {
                                               @RequestPart ProjectRequestDto request,
                                               @RequestPart (required = false) MultipartFile file,
                                               HttpServletRequest servletRequest) throws IOException {
-        return new CommonApiResponse<>("success", projectService.updateProject(projectId, request, file, servletRequest));
+        return new CommonApiResponse<>(OK, projectService.updateProject(projectId, request, file, servletRequest));
     }
 
 
@@ -82,37 +84,37 @@ public class MyPageController {
 
         projectRepository.delete(project);
 
-        return new CommonApiResponse<>("success", "프로젝트가 삭제되었습니다.");
+        return new CommonApiResponse<>(OK, "프로젝트가 삭제되었습니다.");
     }
 
     //내가 찜한 프로젝트 목록
     @GetMapping("/projects/favorite")
     public CommonApiResponse<?> getFavoriteProjects(@ModelAttribute ProjectSearchDto request, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>("success", projectService.findFavoriteProjects(servletRequest, request));
+        return new CommonApiResponse<>(OK, projectService.findFavoriteProjects(servletRequest, request));
     }
 
     //내가 작성한 프로젝트 목록
     @GetMapping("/posts")
     public CommonApiResponse<?> getMyProjects(@ModelAttribute ProjectSearchDto request, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>("success", projectService.findMyProjects(servletRequest, request));
+        return new CommonApiResponse<>(OK, projectService.findMyProjects(servletRequest, request));
     }
 
     //인증 메일 보내기
     @PostMapping("/verificationCode")
     public CommonApiResponse<?> sendVerificationCode(@RequestParam String email) {
-        return new CommonApiResponse<>("", peopleService.sendVerificationCode(email));
+        return new CommonApiResponse<>(OK, peopleService.sendVerificationCode(email));
     }
 
     //인증 메일 확인
     @GetMapping("/verificationCode")
     public CommonApiResponse<?> checkVerificationCode(@RequestParam String email, @RequestParam String code) {
-        return new CommonApiResponse<>("", peopleService.checkVerificationCode(email, code));
+        return new CommonApiResponse<>(OK, peopleService.checkVerificationCode(email, code));
     }
 
     //닉네임 중복 확인
     @GetMapping("/users/nickname")
     public CommonApiResponse<?> checkNickname(@RequestParam String nickname) {
-        return new CommonApiResponse<>("", peopleService.checkNickname(nickname));
+        return new CommonApiResponse<>(OK, peopleService.checkNickname(nickname));
     }
 
 }

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -24,17 +26,17 @@ public class AuthController {
         Map<String, String> tokens = new HashMap<>();
         tokens.put("accessToken", accessToken);
         tokens.put("refreshToken", refreshToken);
-        return new CommonApiResponse<>("success", tokens);
+        return new CommonApiResponse<>(OK, tokens);
     }
 
     @GetMapping("/token")
     public CommonApiResponse<?> reissueAccessToken(HttpServletRequest request) {
-        return new CommonApiResponse<>("success", jwtService.reissueAccessToken(request));
+        return new CommonApiResponse<>(OK, jwtService.reissueAccessToken(request));
     }
 
     @PostMapping("/token")
     public CommonApiResponse<?> blackList(HttpServletRequest request) {
-        return new CommonApiResponse<>("success", jwtService.logout(request));
+        return new CommonApiResponse<>(OK, jwtService.logout(request));
     }
 
 }

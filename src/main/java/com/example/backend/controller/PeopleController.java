@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestController
 @RequiredArgsConstructor
 public class PeopleController {
@@ -33,7 +35,7 @@ public class PeopleController {
     @GetMapping("/peoples")
     public CommonApiResponse<List<PeopleResponseDto>> getPeoples(@ModelAttribute PeopleSearchDto dto) {
 
-        return new CommonApiResponse<>("success", peopleRepository.findPeoples(dto));
+        return new CommonApiResponse<>(OK, peopleRepository.findPeoples(dto));
     }
 
     @GetMapping("/peoples/{peopleId}")
@@ -44,12 +46,12 @@ public class PeopleController {
 
         PeopleDetailResponseDto dto = new PeopleDetailResponseDto(user);
 
-        return new CommonApiResponse<>("success", dto);
+        return new CommonApiResponse<>(OK, dto);
     }
 
     @GetMapping("/peoples/hot")
     public CommonApiResponse<List<PeopleResponseDto>> getHotPeoples(@ModelAttribute HotSearchDto dto) {
-        return new CommonApiResponse<>("success", peopleRepository.findHotPeoples(dto));
+        return new CommonApiResponse<>(OK, peopleRepository.findHotPeoples(dto));
     }
 
     @GetMapping("/users/favorite")
@@ -57,7 +59,7 @@ public class PeopleController {
                                                                          @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
         Long userId = jwtService.getUserIdFromToken(servletRequest);
-        return new CommonApiResponse<>("success", peopleRepository.findFavoritePeoples(userId, pageable));
+        return new CommonApiResponse<>(OK, peopleRepository.findFavoritePeoples(userId, pageable));
     }
 
     @PostMapping("/proposal/send/{peopleId}")
@@ -67,6 +69,6 @@ public class PeopleController {
         Long proposer = jwtService.getUserIdFromToken(servletRequest); //보내는 사람
 
         proposalService.sendProposal(receiver, proposer);
-        return new CommonApiResponse<>("success", "제안 신청이 성공하였습니다.");
+        return new CommonApiResponse<>(OK, "제안 신청이 성공하였습니다.");
     }
 }

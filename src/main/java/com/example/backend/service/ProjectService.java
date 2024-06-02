@@ -1,10 +1,10 @@
 package com.example.backend.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.example.backend.common.response.PageApiResponse;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.Recruit;
 import com.example.backend.domain.User;
-import com.example.backend.dto.request.project.ProjectPageResponseDto;
 import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.request.project.RecruitRequestDto;
@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 @Transactional
@@ -80,11 +82,11 @@ public class ProjectService {
     }
 
     // 프로젝트 목록 가져오기
-    public ProjectPageResponseDto findProjects(ProjectSearchDto request) {
+    public PageApiResponse<?> findProjects(ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
         Page<ProjectResponseDto> projectPage = projectRepository.findProjects(pageable, request);
         List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
-        return new ProjectPageResponseDto(projects, projectPage.getTotalPages(), projectPage.getTotalElements());
+        return new PageApiResponse(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
     }
 
     // 프로젝트 상세 정보 가져오기

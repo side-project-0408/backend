@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.common.response.SliceApiResponse;
 import com.example.backend.domain.Comment;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 @Transactional
@@ -41,11 +44,13 @@ public class CommentService {
     }
 
     // 댓글 목록 가져오기
-    public Slice<CommentResponseDto> getComments(Long projectId, int page, int size) {
+    public SliceApiResponse<?> getComments(Long projectId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
-        return commentRepository.findSliceByProjectId(projectId, pageable);
+        Slice<CommentResponseDto> sliceProject = commentRepository.findSliceByProjectId(projectId, pageable);
+
+        return new SliceApiResponse<>(OK, sliceProject.getContent(), sliceProject.hasNext());
 
     }
 
