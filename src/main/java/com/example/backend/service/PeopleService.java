@@ -1,7 +1,6 @@
 package com.example.backend.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateUserRequestDto;
 import com.example.backend.repository.people.PeopleRepository;
@@ -26,15 +25,23 @@ public class PeopleService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
     public String update(Long userId,
                          @RequestPart UpdateUserRequestDto dto,
-                         @RequestPart (required = false) MultipartFile file) throws IOException {
+                         @RequestPart(required = false) MultipartFile file) throws IOException {
         User user = peopleRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("해당 사용자는 존재하지 않습니다."));
 
-
-        awsS3Service.deleteFileFromS3(user.getUserFileUrl());
-        String fileUrl = awsS3Service.upload(file);
+        String fileUrl;
+        if (file != null && !file.isEmpty()) {
+            // 기존 파일 삭제
+            awsS3Service.deleteFileFromS3(user.getUserFileUrl());
+            // 새 파일 업로드
+            fileUrl = awsS3Service.upload(file);
+        } else {
+            // 기존 파일 URL 유지
+            fileUrl = user.getUserFileUrl();
+        }
 
         user.updateUser(dto.getNickname(),
                 dto.getPosition(),

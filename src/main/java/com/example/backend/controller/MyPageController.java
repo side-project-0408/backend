@@ -50,7 +50,7 @@ public class MyPageController {
     //마이페이지 내 정보 수정
     @PatchMapping("/users")
     public CommonApiResponse<?> editUser(@RequestPart UpdateUserRequestDto dto,
-                                         @RequestPart MultipartFile file,
+                                         @RequestPart(required = false) MultipartFile file,
                                          HttpServletRequest servletRequest) throws IOException {
 
         Long userId = jwtService.getUserIdFromToken(servletRequest);
