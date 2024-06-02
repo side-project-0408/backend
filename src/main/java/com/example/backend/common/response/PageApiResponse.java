@@ -6,15 +6,14 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public class CommonApiResponse<T> {
+public class PageApiResponse<T> {
 
     private HttpStatus result;
 
     private T data;
 
-    public static<T> CommonApiResponse<T> success(T data) {
-        return new CommonApiResponse<>(HttpStatus.OK, data);
+    private int totalPages;
 
-    }
+    private long totalElements;
 
 }

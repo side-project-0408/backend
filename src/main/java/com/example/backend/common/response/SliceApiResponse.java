@@ -6,15 +6,12 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public class CommonApiResponse<T> {
+public class SliceApiResponse<T> {
 
     private HttpStatus result;
 
     private T data;
 
-    public static<T> CommonApiResponse<T> success(T data) {
-        return new CommonApiResponse<>(HttpStatus.OK, data);
-
-    }
+    private Boolean hasNext;
 
 }

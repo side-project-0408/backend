@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestController
 @RequiredArgsConstructor
 public class FavoriteController {
@@ -15,25 +17,25 @@ public class FavoriteController {
     // 프로젝트 찜하기
     @PostMapping("/projects/favorite")
     public CommonApiResponse<?> projectFavorite(@RequestParam Long projectId, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>("success", favoriteService.projectFavorite(projectId, servletRequest));
+        return new CommonApiResponse<>(OK, favoriteService.projectFavorite(projectId, servletRequest));
     }
 
     // 프로젝트 찜하기 취소
     @DeleteMapping("/projects/favorite")
     private CommonApiResponse<?> projectFavoriteCancel(@RequestParam Long projectId, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>("success", favoriteService.projectFavoriteCancel(projectId, servletRequest));
+        return new CommonApiResponse<>(OK, favoriteService.projectFavoriteCancel(projectId, servletRequest));
     }
 
     // 유저 찜하기
     @PostMapping("/users/favorite")
     public CommonApiResponse<?> userFavorite(@RequestParam Long favoriteId, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>("success", favoriteService.userFavorite(favoriteId, servletRequest));
+        return new CommonApiResponse<>(OK, favoriteService.userFavorite(favoriteId, servletRequest));
     }
 
     // 유저 찜하기 취소
     @DeleteMapping("/users/favorite")
     private CommonApiResponse<?> userFavoriteCancel(@RequestParam Long favoriteId, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>("success", favoriteService.userFavoriteCancel(favoriteId, servletRequest));
+        return new CommonApiResponse<>(OK, favoriteService.userFavoriteCancel(favoriteId, servletRequest));
     }
 
 }
