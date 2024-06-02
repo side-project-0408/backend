@@ -10,6 +10,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -26,13 +28,13 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     // 프로젝트 목록 가져오기
     @Override
-    public List<ProjectResponseDto> findProjects(Pageable pageable, ProjectSearchDto searchDto) {
+    public Page<ProjectResponseDto> findProjects(Pageable pageable, ProjectSearchDto searchDto) {
 
         OrderSpecifier<?> orderCondition = searchDto.getSort() == null || searchDto.getSort().equalsIgnoreCase("POPULAR")
                 ? project.favoriteCount.add(project.viewCount).desc()
                 : project.createdAt.desc();
 
-        return queryFactory
+        List<ProjectResponseDto> content = queryFactory
                 .select(new QProjectResponseDto(
                         project.projectId,
                         project.user.nickname,
@@ -52,6 +54,16 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        long total = queryFactory
+                .select(project.count())
+                .from(project)
+                .where(eqTechStack(searchDto.getTechStack()),
+                        eqPosition(searchDto.getPosition()),
+                        eqKeyword(searchDto.getKeyword()))
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total);
 
     }
 
