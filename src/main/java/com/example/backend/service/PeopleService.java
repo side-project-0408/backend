@@ -1,14 +1,20 @@
 package com.example.backend.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.example.backend.common.response.PageApiResponse;
 import com.example.backend.domain.User;
 import com.example.backend.domain.VerificationCode;
+import com.example.backend.dto.request.people.PeopleSearchDto;
 import com.example.backend.dto.request.people.UpdateUserRequestDto;
+import com.example.backend.dto.response.people.PeopleResponseDto;
 import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.repository.people.VerificationCodeRepository;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -132,5 +138,4 @@ public class PeopleService {
         return false;
 
     }
-
 }
