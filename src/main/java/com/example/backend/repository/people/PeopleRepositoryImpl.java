@@ -56,8 +56,8 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         positionEq(dto.getPosition()),
                         keywordEq(dto.getKeyword()))
                 .orderBy(orderCondition)
-                .offset(dto.getPage())
-                .limit(10)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         long total = queryFactory.selectFrom(user)
