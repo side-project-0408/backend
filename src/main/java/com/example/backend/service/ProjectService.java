@@ -100,15 +100,20 @@ public class ProjectService {
         return checkRecent(projectRepository.findHotProjects(size));
     }
 
-    public List<ProjectResponseDto> findFavoriteProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
+    // 내가 찜한 프로젝트 목록 가져오기
+    public PageApiResponse<?> findFavoriteProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        return checkRecent(projectRepository.findFavoriteProjects(jwtService.getUserIdFromToken(servletRequest), pageable));
+        Page<ProjectResponseDto> projectPage = projectRepository.findFavoriteProjects(jwtService.getUserIdFromToken(servletRequest), pageable);
+        List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
+        return new PageApiResponse<>(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
     }
 
     // 내가 작성한 프로젝트 가져오기
-    public List<ProjectResponseDto> findMyProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
+    public PageApiResponse<?> findMyProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        return checkRecent(projectRepository.findMyProjects(jwtService.getUserIdFromToken(servletRequest), pageable));
+        Page<ProjectResponseDto> projectPage = projectRepository.findMyProjects(jwtService.getUserIdFromToken(servletRequest), pageable);
+        List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
+        return new PageApiResponse<>(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
     }
 
     // 프로젝트 수정

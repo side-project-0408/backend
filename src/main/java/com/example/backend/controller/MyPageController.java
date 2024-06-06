@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.common.response.CommonApiResponse;
+import com.example.backend.common.response.PageApiResponse;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateUserRequestDto;
@@ -95,8 +96,8 @@ public class MyPageController {
 
     //내가 작성한 프로젝트 목록
     @GetMapping("/posts")
-    public CommonApiResponse<?> getMyProjects(@ModelAttribute ProjectSearchDto request, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>(OK, projectService.findMyProjects(servletRequest, request));
+    public PageApiResponse<?> getMyProjects(@ModelAttribute ProjectSearchDto request, HttpServletRequest servletRequest) {
+        return projectService.findMyProjects(servletRequest, request);
     }
 
     //인증 메일 보내기

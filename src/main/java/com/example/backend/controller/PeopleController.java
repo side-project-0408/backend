@@ -59,11 +59,11 @@ public class PeopleController {
     }
 
     @GetMapping("/users/favorite")
-    public CommonApiResponse<List<PeopleResponseDto>> getFavoritePeoples(HttpServletRequest servletRequest,
+    public PageApiResponse<List<PeopleResponseDto>> getFavoritePeoples(HttpServletRequest servletRequest,
                                                                          @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
 
         Long userId = jwtService.getUserIdFromToken(servletRequest);
-        return new CommonApiResponse<>(OK, peopleRepository.findFavoritePeoples(userId, pageable));
+        return peopleRepository.findFavoritePeoples(userId, pageable);
     }
 
     @PostMapping("/proposal/send/{peopleId}")
