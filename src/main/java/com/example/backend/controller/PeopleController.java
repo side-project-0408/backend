@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.common.response.CommonApiResponse;
+import com.example.backend.common.response.PageApiResponse;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.HotSearchDto;
 import com.example.backend.dto.request.people.PeopleSearchDto;
@@ -10,6 +11,7 @@ import com.example.backend.repository.people.PeopleRepository;
 import com.example.backend.repository.project.ProjectRepository;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.KakaoMessageService;
+import com.example.backend.service.PeopleService;
 import com.example.backend.service.ProposalService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +33,13 @@ public class PeopleController {
     private final KakaoMessageService kakaoMessageService;
     private final ProposalService proposalService;
     private final JwtService jwtService;
+    private final PeopleService peopleService;
 
     @GetMapping("/peoples")
-    public CommonApiResponse<List<PeopleResponseDto>> getPeoples(@ModelAttribute PeopleSearchDto dto) {
+    public PageApiResponse<?> getPeoples(@ModelAttribute PeopleSearchDto dto) {
+        //return peopleService.findPeoples(dto);
 
-        return new CommonApiResponse<>(OK, peopleRepository.findPeoples(dto));
+        return peopleRepository.findPeoples(dto);
     }
 
     @GetMapping("/peoples/{peopleId}")

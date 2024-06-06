@@ -1,5 +1,6 @@
 package com.example.backend.repository.people;
 
+import com.example.backend.common.response.PageApiResponse;
 import com.example.backend.dto.request.people.HotSearchDto;
 import com.example.backend.dto.request.people.PeopleSearchDto;
 import com.example.backend.dto.response.people.PeopleResponseDto;
@@ -8,12 +9,16 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 import static com.example.backend.domain.QProject.project;
 import static com.example.backend.domain.QUser.user;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.util.StringUtils.hasText;
 
 public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
@@ -27,11 +32,13 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
     }
 
     @Override
-    public List<PeopleResponseDto> findPeoples(PeopleSearchDto dto) {
+    public PageApiResponse<List<PeopleResponseDto>> findPeoples(PeopleSearchDto dto) {
 
         OrderSpecifier<?> orderCondition = dto.getSort().equalsIgnoreCase("POPULAR")
                 ? user.favoriteCount.add(project.viewCount).desc()
                 : user.createdAt.desc();
+
+        Pageable pageable = PageRequest.of(dto.getPage(), dto.getSize());
 
         List<PeopleResponseDto> result = queryFactory
                 .select(new QPeopleResponseDto(
@@ -52,7 +59,15 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                 .offset(dto.getPage())
                 .limit(10)
                 .fetch();
-        return result;
+
+        long total = queryFactory.selectFrom(user)
+                .where(techSizeEq(dto.getTechSize()),
+                        positionEq(dto.getPosition()),
+                        keywordEq(dto.getKeyword()))
+                .fetchCount();
+
+        Page<PeopleResponseDto> peoplePage = new PageImpl<>(result, pageable, total);
+        return new PageApiResponse<>(OK, peoplePage.getContent(), peoplePage.getTotalPages(), peoplePage.getTotalElements());
     }
 
     @Override
