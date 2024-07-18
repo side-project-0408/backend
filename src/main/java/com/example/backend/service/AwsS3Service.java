@@ -74,7 +74,7 @@ public class AwsS3Service {
     //파일의 public url을 이용하여 S3에서 해당 이미지 제거
 
     public void deleteFileFromS3(String fileAddress) {
-        if(fileAddress.isEmpty() || fileAddress == null) return;
+        if(fileAddress == null || fileAddress.isEmpty()) return;
 
         String key = getKeyFromFileAddress(fileAddress);
         if(key.equals("default_images_0520.jpg")) return;

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface ProjectRepository extends JpaRepository<Project, Long>, ProjectRepositoryCustom {
     Project findByUserUserIdAndProjectId(Long userId, Long projectId);
 

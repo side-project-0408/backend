@@ -57,11 +57,21 @@ public class JwtService {
     public String createRefreshToken(CustomOAuth2User customOAuth2User) {
         return buildToken(customOAuth2User, refreshExpiration, "R");
     }
-
+/*
     public Boolean validToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return claims.getExpiration().after(new Date());
     }
+ */
+    public Boolean validToken(String token) {
+        try {
+            Claims claims = getClaimsFromToken(token);
+            return claims.getExpiration().after(new Date());
+        } catch (ExpiredJwtException e) {
+            return false;
+        }
+    }
+
 
     public String reissueAccessToken(HttpServletRequest request) {
         String refreshToken = resolveToken(request);
@@ -76,7 +86,6 @@ public class JwtService {
         Claims claims = getClaimsFromToken(refreshToken);
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(
                 User.builder()
-                        .nickname(claims.getSubject())
                         .userId(claims.get("userId", Long.class))
                         .build());
 
@@ -105,7 +114,7 @@ public class JwtService {
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, null);
     }
 
-    public String logout(HttpServletRequest request) {
+    public String addBlackList(HttpServletRequest request) {
         String refreshToken = resolveToken(request);
         jwtRepository.save(TokenBlackList.builder().refreshToken(refreshToken).build());
         return "등록 성공";

@@ -35,8 +35,8 @@ public class AuthController {
     }
 
     @PostMapping("/token")
-    public CommonApiResponse<?> blackList(HttpServletRequest request) {
-        return new CommonApiResponse<>(OK, jwtService.logout(request));
+    public CommonApiResponse<?> addBlackList(HttpServletRequest request) {
+        return new CommonApiResponse<>(OK, jwtService.addBlackList(request));
     }
 
 }

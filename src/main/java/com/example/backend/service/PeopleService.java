@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.example.backend.common.response.PageApiResponse;
+import com.example.backend.common.util.RedisUtil;
 import com.example.backend.domain.User;
 import com.example.backend.domain.VerificationCode;
 import com.example.backend.dto.request.people.PeopleSearchDto;
@@ -36,6 +37,8 @@ public class PeopleService {
 
     private final AwsS3Service awsS3Service;
     private final JavaMailSender mailSender;
+
+    private final RedisUtil redisUtil;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -92,10 +95,14 @@ public class PeopleService {
                         "<br><br>" +
                         "인증 번호를 제대로 입력해주세요";
 
+        /* redis 적용 전
         codeRepository.save(VerificationCode.builder()
                 .email(email)
                 .verificationCode(verificationCode)
                 .build());
+         */
+
+        redisUtil.setData(email, verificationCode, 30 * 60 * 1000L);
 
         return mailSend(from, email, title, content);
 
@@ -119,12 +126,22 @@ public class PeopleService {
 
     public Boolean checkVerificationCode(String email, String code) {
 
+        /* redis 적용 전
         String verificationCode = codeRepository.findByEmail(email).getVerificationCode();
 
         if (verificationCode.equals(code)) {
             codeRepository.deleteById(email);
             return true;
         }
+         */
+
+        String verificationCode = redisUtil.getData(email);
+
+        if (verificationCode.equals(code)) {
+            redisUtil.deleteDate(email);
+            return true;
+        }
+
 
         return false;
 

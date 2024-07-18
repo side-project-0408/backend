@@ -38,31 +38,31 @@ public class ProjectService {
     private final JwtService jwtService;
 
     // 프로젝트 저장
-    public String postProject(ProjectRequestDto request, MultipartFile file, HttpServletRequest servletRequest) throws IOException {
+    public String postProject(ProjectRequestDto dto, MultipartFile file, HttpServletRequest servletRequest) throws IOException {
 
         List<Recruit> recruits = new ArrayList<>();
 
         String position = "";
         String fileUrl = "";
-        if(!file.isEmpty() || file == null) {
+        if(!file.isEmpty() && file != null) {
             fileUrl = awsS3Service.upload(file);
         }
 
         Project project = Project.builder()
                 .user(User.builder().userId(jwtService.getUserIdFromToken(servletRequest)).build())
-                .title(request.getTitle())
+                .title(dto.getTitle())
                 .projectFileUrl(fileUrl)
-                .deadline(request.getDeadline())
-                .softSkill(request.getSoftSkill())
-                .importantQuestion(request.getImportantQuestion())
-                .techStack(request.getTechStack())
-                .description(request.getDescription())
+                .deadline(dto.getDeadline())
+                .softSkill(dto.getSoftSkill())
+                .importantQuestion(dto.getImportantQuestion())
+                .techStack(dto.getTechStack())
+                .description(dto.getDescription())
                 .recruits(recruits)
                 .recruitment("OPEN")
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        for (RecruitRequestDto recruitDto : request.getRecruit()) {
+        for (RecruitRequestDto recruitDto : dto.getRecruit()) {
             recruits.add(Recruit.builder()
                     .project(project)
                     .position(recruitDto.getPosition())
@@ -117,7 +117,7 @@ public class ProjectService {
     }
 
     // 프로젝트 수정
-    public String updateProject(Long projectId, ProjectRequestDto request, MultipartFile file,
+    public String updateProject(Long projectId, ProjectRequestDto dto, MultipartFile file,
                                 HttpServletRequest servletRequest) throws IOException {
 
         Project project = projectRepository.findByProjectId(projectId);
@@ -130,15 +130,14 @@ public class ProjectService {
         String position = "";
         String fileUrl = "";
 
-        if(!file.isEmpty() || file == null) {
+        if(!file.isEmpty() && file != null) {
             awsS3Service.deleteFileFromS3(project.getProjectFileUrl()); //기존 파일 삭제
             fileUrl = awsS3Service.upload(file);
         }
 
-
         if (!recruits.isEmpty()) recruits.clear();
 
-        for (RecruitRequestDto recruitDto : request.getRecruit()) {
+        for (RecruitRequestDto recruitDto : dto.getRecruit()) {
             recruits.add(Recruit.builder()
                     .project(project)
                     .position(recruitDto.getPosition())
@@ -148,18 +147,35 @@ public class ProjectService {
             position += recruitDto.getPosition() + ", ";
         }
 
-        project.updateTitle(request.getTitle());
+        project.updateTitle(dto.getTitle());
         project.updateProjectFileUrl(fileUrl);
-        project.updateDeadline(request.getDeadline());
-        project.updateImportantQuestion(request.getImportantQuestion());
-        project.updateSoftSkill(request.getSoftSkill());
-        project.updateTechStack(request.getTechStack());
-        project.updateDescription(request.getDescription());
+        project.updateDeadline(dto.getDeadline());
+        project.updateImportantQuestion(dto.getImportantQuestion());
+        project.updateSoftSkill(dto.getSoftSkill());
+        project.updateTechStack(dto.getTechStack());
+        project.updateDescription(dto.getDescription());
         project.updateRecruit(recruits);
         project.updatePosition(position.substring(0, position.length() - 2));
         project.updateLastModifiedAt(LocalDateTime.now());
 
         return "프로젝트 수정 완료";
+
+    }
+
+    public String deleteProject(Long projectId, HttpServletRequest servletRequest) {
+
+        Project project = projectRepository.findByUserUserIdAndProjectId(jwtService.getUserIdFromToken(servletRequest), projectId);
+
+        if(project == null) {
+            throw new RuntimeException("해당 프로젝트는 존재하지 않습니다.");
+        }
+        if(project.getProjectFileUrl() != null && !project.getProjectFileUrl().isEmpty()) {
+            awsS3Service.deleteFileFromS3(project.getProjectFileUrl());
+        }
+
+        projectRepository.delete(project);
+
+        return "프로젝트 삭제 완료";
 
     }
 

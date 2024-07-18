@@ -64,28 +64,17 @@ public class MyPageController {
     //내가 작성한 프로젝트 수정
     @PatchMapping("/posts/{projectId}")
     public CommonApiResponse<?> updateProject(@PathVariable("projectId") Long projectId,
-                                              @RequestPart ProjectRequestDto request,
+                                              @RequestPart ProjectRequestDto dto,
                                               @RequestPart (required = false) MultipartFile file,
                                               HttpServletRequest servletRequest) throws IOException {
-        return new CommonApiResponse<>(OK, projectService.updateProject(projectId, request, file, servletRequest));
+        return new CommonApiResponse<>(OK, projectService.updateProject(projectId, dto, file, servletRequest));
     }
 
 
     //내가 작성한 프로젝트 삭제
     @DeleteMapping("/posts/{projectId}")
-    public CommonApiResponse<?> deletePost(@PathVariable("projectId") Long projectId, HttpServletRequest servletRequest) {
-
-        Project project = projectRepository.findByUserUserIdAndProjectId(jwtService.getUserIdFromToken(servletRequest), projectId);
-        if(project == null) {
-            throw new RuntimeException("해당 프로젝트는 존재하지 않습니다.");
-        }
-        if(!project.getProjectFileUrl().isEmpty() || project.getProjectFileUrl() != null) {
-            awsS3Service.deleteFileFromS3(project.getProjectFileUrl());
-        }
-
-        projectRepository.delete(project);
-
-        return new CommonApiResponse<>(OK, "프로젝트가 삭제되었습니다.");
+    public CommonApiResponse<?> deleteProject(@PathVariable("projectId") Long projectId, HttpServletRequest servletRequest) {
+        return new CommonApiResponse<>(OK, projectService.deleteProject(projectId, servletRequest));
     }
 
     //내가 찜한 프로젝트 목록
