@@ -52,7 +52,7 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.userId,
                         user.createdAt))
                 .from(user)
-                .where(techSizeEq(dto.getTechSize()),
+                .where(techStackEq(dto.getTechStack()),
                         positionEq(dto.getPosition()),
                         keywordEq(dto.getKeyword()))
                 .orderBy(orderCondition)
@@ -61,7 +61,7 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                 .fetch();
 
         long total = queryFactory.selectFrom(user)
-                .where(techSizeEq(dto.getTechSize()),
+                .where(techStackEq(dto.getTechStack()),
                         positionEq(dto.getPosition()),
                         keywordEq(dto.getKeyword()))
                 .fetchCount();
@@ -93,7 +93,8 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
 
     //내가 찜한 사람 목록
     @Override
-    public List<PeopleResponseDto> findFavoritePeoples(Long peopleId, Pageable pageable) { //TODO page 통일할부분 생각하기
+    public PageApiResponse<List<PeopleResponseDto>> findFavoritePeoples(Long peopleId, Pageable pageable) { //TODO page 통일할부분 생각하기
+
         List<PeopleResponseDto> result = queryFactory
                 .select(new QPeopleResponseDto(
                         user.nickname,
@@ -111,14 +112,20 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        return result;
+
+        long total = queryFactory.selectFrom(user)
+                .where(user.userLike.contains(peopleId))
+                .fetchCount();
+
+        Page<PeopleResponseDto> peoplePage = new PageImpl<>(result, pageable, total);
+        return new PageApiResponse<>(OK, peoplePage.getContent(), peoplePage.getTotalPages(), peoplePage.getTotalElements());
     }
 
     //기술 스택 조건 검색
-    private BooleanExpression techSizeEq(String techSize) {
-        if (techSize == null || techSize.trim().isEmpty()) return null;
+    private BooleanExpression techStackEq(String techStack) {
+        if (techStack == null || techStack.trim().isEmpty()) return null;
 
-        String[] split = techSize.split(", ");
+        String[] split = techStack.split(", ");
         BooleanExpression condition = null;
 
         for (String stack : split) {

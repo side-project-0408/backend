@@ -38,11 +38,11 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyByte);
     }
 
-    public String buildToken(CustomOAuth2User customOAuth2User, Long expiration) {
+    public String buildToken(CustomOAuth2User customOAuth2User, Long expiration, String type) {
         Date expiryDate = new Date(new Date().getTime() + expiration);
 
         return Jwts.builder()
-                .setSubject(customOAuth2User.getName())
+                .setSubject(type)
                 .claim("userId", customOAuth2User.getUser().getUserId())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
@@ -51,30 +51,41 @@ public class JwtService {
     }
 
     public String createAccessToken(CustomOAuth2User customOAuth2User) {
-        return buildToken(customOAuth2User, accessExpiration);
+        return buildToken(customOAuth2User, accessExpiration, "A");
     }
 
     public String createRefreshToken(CustomOAuth2User customOAuth2User) {
-        return buildToken(customOAuth2User, refreshExpiration);
+        return buildToken(customOAuth2User, refreshExpiration, "R");
     }
-
+/*
     public Boolean validToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return claims.getExpiration().after(new Date());
     }
+ */
+    public Boolean validToken(String token) {
+        try {
+            Claims claims = getClaimsFromToken(token);
+            return claims.getExpiration().after(new Date());
+        } catch (ExpiredJwtException e) {
+            return false;
+        }
+    }
+
 
     public String reissueAccessToken(HttpServletRequest request) {
         String refreshToken = resolveToken(request);
         Optional<TokenBlackList> jwtOptional = jwtRepository.findByToken(refreshToken);
 
-        if (jwtOptional.isPresent()) { // 블랙 리스트에 등록된 토큰인 경우
+        if (jwtOptional.isPresent())  // 블랙 리스트에 등록된 토큰인 경우
             return "유효한 토큰이 아닙니다.";
-        }
+
+        if (!getClaimsFromToken(refreshToken).getSubject().equals("R"))
+            return "리프레시 토큰이 아닙니다.";
 
         Claims claims = getClaimsFromToken(refreshToken);
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(
                 User.builder()
-                        .nickname(claims.getSubject())
                         .userId(claims.get("userId", Long.class))
                         .build());
 
@@ -103,7 +114,7 @@ public class JwtService {
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, null);
     }
 
-    public String logout(HttpServletRequest request) {
+    public String addBlackList(HttpServletRequest request) {
         String refreshToken = resolveToken(request);
         jwtRepository.save(TokenBlackList.builder().refreshToken(refreshToken).build());
         return "등록 성공";

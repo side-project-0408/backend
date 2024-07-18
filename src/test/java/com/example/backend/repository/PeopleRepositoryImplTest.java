@@ -23,8 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 class PeopleRepositoryImplTest {
 
-    @Autowired
-    EntityManager em;
+    //@Autowired
+    //EntityManager em;
 
     @Autowired
     private PeopleRepository peopleRepository;
@@ -42,7 +42,7 @@ class PeopleRepositoryImplTest {
         peopleRepository.save(userB);
 
         PeopleSearchDto dto = new PeopleSearchDto();
-        dto.setTechSize("nextjs");
+        dto.setTechStack("nextjs");
         //dto.setKeyword("aaa");
 
         PageApiResponse<List<PeopleResponseDto>> result = peopleRepository.findPeoples(dto);

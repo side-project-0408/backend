@@ -13,5 +13,5 @@ public interface PeopleRepositoryCustom {
 
     List<PeopleResponseDto> findHotPeoples(HotSearchDto dto);
 
-    List<PeopleResponseDto> findFavoritePeoples(Long peopleId, Pageable pageable);
+    PageApiResponse<List<PeopleResponseDto>> findFavoritePeoples(Long peopleId, Pageable pageable);
 }

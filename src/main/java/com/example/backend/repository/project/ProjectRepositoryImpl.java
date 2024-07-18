@@ -55,7 +55,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = queryFactory
+        Long total = queryFactory
                 .select(project.count())
                 .from(project)
                 .where(eqTechStack(searchDto.getTechStack()),
@@ -92,9 +92,9 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     // 내가 찜한 프로젝트 목록 가져오기
     @Override
-    public List<ProjectResponseDto> findFavoriteProjects(Long userId, Pageable pageable) {
+    public Page<ProjectResponseDto> findFavoriteProjects(Long userId, Pageable pageable) {
 
-        return queryFactory
+        List<ProjectResponseDto> content = queryFactory
                 .select(new QProjectResponseDto(
                         project.projectId,
                         project.user.nickname,
@@ -112,6 +112,14 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        Long total = queryFactory
+                .select(project.count())
+                .from(project)
+                .where(project.projectLike.contains(userId))
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total);
 
     }
 
@@ -150,9 +158,9 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
     // 내가 작성한 프로젝트 가져오기
     @Override
-    public List<ProjectResponseDto> findMyProjects(Long userId, Pageable pageable) {
+    public Page<ProjectResponseDto> findMyProjects(Long userId, Pageable pageable) {
 
-        return queryFactory
+        List<ProjectResponseDto> content = queryFactory
                 .select(new QProjectResponseDto(
                         project.projectId,
                         project.user.nickname,
@@ -170,6 +178,14 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        Long total = queryFactory
+                .select(project.count())
+                .from(project)
+                .where(project.user.userId.eq(userId))
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total);
 
     }
 

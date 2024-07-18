@@ -22,7 +22,6 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtService.resolveToken(request);
@@ -35,18 +34,22 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
         // 토큰이 없을 때
         if (token == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 상태 코드 401 Unauthorized
-            response.getWriter().write("Unauthorized: Access token is missing"); // 메시지 전송
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+            response.getWriter().write("null token");
+            response.getWriter().flush();
+            return;
         }
 
-        if (jwtService.validToken(token)) {
-            UsernamePasswordAuthenticationToken authentication = jwtService.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 상태 코드 401 Unauthorized
-            response.getWriter().write("토큰 유효 기간 지남"); // 메시지 전송
+        // 토큰의 유효기간이 지났을 때
+        if (!jwtService.validToken(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+            response.getWriter().write("token has expired");
+            response.getWriter().flush();
+            return;
         }
 
+        UsernamePasswordAuthenticationToken authentication = jwtService.getAuthentication(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
 
     }

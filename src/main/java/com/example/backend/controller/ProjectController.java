@@ -22,10 +22,10 @@ public class ProjectController {
 
     // 프로젝트 저장
     @PostMapping("/projects")
-    public CommonApiResponse<?> postProject(@RequestPart ProjectRequestDto request,
+    public CommonApiResponse<?> postProject(@RequestPart ProjectRequestDto dto,
                                             @RequestPart(required = false) MultipartFile file,
                                             HttpServletRequest servletRequest) throws IOException {
-        return new CommonApiResponse<>(OK, projectService.postProject(request, file, servletRequest));
+        return new CommonApiResponse<>(OK, projectService.postProject(dto, file, servletRequest));
     }
 
     // 프로젝트 목록 가져오기
