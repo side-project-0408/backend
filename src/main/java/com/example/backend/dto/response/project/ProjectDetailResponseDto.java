@@ -2,7 +2,6 @@ package com.example.backend.dto.response.project;
 
 import com.example.backend.dto.request.project.RecruitRequestDto;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Builder
 @AllArgsConstructor
 public class ProjectDetailResponseDto {
 

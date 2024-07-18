@@ -9,16 +9,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
 public class TokenAuthFilter extends OncePerRequestFilter {
 
-    public final JwtService jwtService;
+    private final JwtService jwtService;
+
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -32,18 +34,22 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
         // 토큰이 없을 때
         if (token == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 상태 코드 401 Unauthorized
-            response.getWriter().write("Unauthorized: Access token is missing"); // 메시지 전송
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+            response.getWriter().write("null token");
+            response.getWriter().flush();
+            return;
         }
 
-        if (jwtService.validToken(token)) {
-            UsernamePasswordAuthenticationToken authentication = jwtService.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 상태 코드 401 Unauthorized
-            response.getWriter().write("토큰 유효 기간 지남"); // 메시지 전송
+        // 토큰의 유효기간이 지났을 때
+        if (!jwtService.validToken(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+            response.getWriter().write("token has expired");
+            response.getWriter().flush();
+            return;
         }
 
+        UsernamePasswordAuthenticationToken authentication = jwtService.getAuthentication(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
 
     }
@@ -51,30 +57,43 @@ public class TokenAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 
-        String[] excludePath = {
+        String[] excludePaths = {
                 "/favicon.ico",
                 "/error",
                 "/oauth2/success",
-                "/projects/**",
-                "/projects/hot",
-                "/peoples",
-                "/peoples/**",
-                "/peoples/hot"
         };
 
-        String[] excludeGetPath = {
+        String[] excludeGetPaths = {
                 "/projects",
-                "/comments/**"
+                "/projects/**",
+                //"/projects/hot",
+                "/comments/**",
+                "/peoples",
+                "/peoples/**",
+                //"/peoples/hot",
+                "/users/nickname"
         };
 
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        if (method.equalsIgnoreCase("GET") && Arrays.stream(excludeGetPath).anyMatch(path::startsWith))
-            return Arrays.stream(excludeGetPath).anyMatch(path::startsWith);
+        // GET 메소드에 대한 경로 제외 확인
+        if (method.equalsIgnoreCase("GET")) {
+            for (String exclude : excludeGetPaths) {
+                if (pathMatcher.match(exclude, path)) {
+                    return true;
+                }
+            }
+        }
 
-        return Arrays.stream(excludePath).anyMatch(path::startsWith);
+        // 다른 메소드에 대한 경로 제외 확인
+        for (String exclude : excludePaths) {
+            if (pathMatcher.match(exclude, path)) {
+                return true;
+            }
+        }
 
+        return false;
 
     }
 

@@ -15,6 +15,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "proposal")
 public class Proposal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

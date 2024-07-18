@@ -41,13 +41,6 @@ public class ProjectControllerTest {
         System.out.println("==============");
         System.out.println("refreshToken : " + refreshToken);
 
-
-        System.out.println(accessClaims.getSubject());
-        System.out.println(accessClaims.getExpiration());
-        System.out.println(accessClaims.get("userId", Long.class));
-        System.out.println(accessClaims.getIssuedAt());
-
-
     }
 
 }

@@ -15,6 +15,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "comment")
 public class Comment {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

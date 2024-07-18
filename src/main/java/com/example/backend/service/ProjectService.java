@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.example.backend.common.response.PageApiResponse;
 import com.example.backend.domain.Project;
 import com.example.backend.domain.Recruit;
 import com.example.backend.domain.User;
@@ -12,6 +13,7 @@ import com.example.backend.dto.response.project.ProjectResponseDto;
 import com.example.backend.repository.project.ProjectRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 @Transactional
@@ -34,31 +38,31 @@ public class ProjectService {
     private final JwtService jwtService;
 
     // 프로젝트 저장
-    public String postProject(ProjectRequestDto request, MultipartFile file, HttpServletRequest servletRequest) throws IOException {
+    public String postProject(ProjectRequestDto dto, MultipartFile file, HttpServletRequest servletRequest) throws IOException {
 
         List<Recruit> recruits = new ArrayList<>();
 
         String position = "";
         String fileUrl = "";
-        if(!file.isEmpty() || file == null) {
+        if(!file.isEmpty() && file != null) {
             fileUrl = awsS3Service.upload(file);
         }
 
         Project project = Project.builder()
                 .user(User.builder().userId(jwtService.getUserIdFromToken(servletRequest)).build())
-                .title(request.getTitle())
+                .title(dto.getTitle())
                 .projectFileUrl(fileUrl)
-                .deadline(request.getDeadline())
-                .softSkill(request.getSoftSkill())
-                .importantQuestion(request.getImportantQuestion())
-                .techStack(request.getTechStack())
-                .description(request.getDescription())
+                .deadline(dto.getDeadline())
+                .softSkill(dto.getSoftSkill())
+                .importantQuestion(dto.getImportantQuestion())
+                .techStack(dto.getTechStack())
+                .description(dto.getDescription())
                 .recruits(recruits)
                 .recruitment("OPEN")
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        for (RecruitRequestDto recruitDto : request.getRecruit()) {
+        for (RecruitRequestDto recruitDto : dto.getRecruit()) {
             recruits.add(Recruit.builder()
                     .project(project)
                     .position(recruitDto.getPosition())
@@ -71,8 +75,6 @@ public class ProjectService {
         project.updatePosition(position.substring(0, position.length() - 2));
         project.updateRecruit(recruits);
 
-
-
         projectRepository.save(project);
 
         return "프로젝트 저장 완료";
@@ -80,49 +82,17 @@ public class ProjectService {
     }
 
     // 프로젝트 목록 가져오기
-    public List<ProjectResponseDto> findProjects(ProjectSearchDto request) {
-
+    public PageApiResponse<?> findProjects(ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-
-        ProjectSearchDto searchDto = ProjectSearchDto.builder()
-                .techStack(request.getTechStack())
-                .position(request.getPosition())
-                .keyword(request.getKeyword())
-                .sort(request.getSort())
-                .build();
-
-        return checkRecent(projectRepository.findProjects(pageable, searchDto));
-
+        Page<ProjectResponseDto> projectPage = projectRepository.findProjects(pageable, request);
+        List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
+        return new PageApiResponse(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
     }
 
     // 프로젝트 상세 정보 가져오기
     public ProjectDetailResponseDto findProject(Long projectId) {
-
         List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
-
-        if (content.isEmpty()) return null;
-
-        return ProjectDetailResponseDto.builder()
-                .projectId(content.get(0).getProjectId())
-                .userId(content.get(0).getUserId())
-                .nickname(content.get(0).getNickname())
-                .userFileUrl(content.get(0).getUserFileUrl())
-                .projectFileUrl(content.get(0).getProjectFileUrl())
-                .title(content.get(0).getTitle())
-                .techStack(content.get(0).getTechStack())
-                .softSkill(content.get(0).getSoftSkill())
-                .importantQuestion(content.get(0).getImportantQuestion())
-                .deadline(content.get(0).getDeadline())
-                .recruitment(content.get(0).getRecruitment())
-                .employmentStatus(content.get(0).getEmploymentStatus())
-                .viewCount(content.get(0).getViewCount())
-                .favoriteCount(content.get(0).getFavoriteCount())
-                .description(content.get(0).getDescription())
-                .createdAt(content.get(0).getCreatedAt())
-                .lastModifiedAt(content.get(0).getLastModifiedAt())
-                .recruit(content.get(0).getRecruit())
-                .build();
-
+        return (content.isEmpty()) ? null : content.get(0);
     }
 
     // 핫 프로젝트 목록 가져오기
@@ -130,19 +100,24 @@ public class ProjectService {
         return checkRecent(projectRepository.findHotProjects(size));
     }
 
-    public List<ProjectResponseDto> findFavoriteProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
+    // 내가 찜한 프로젝트 목록 가져오기
+    public PageApiResponse<?> findFavoriteProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        return checkRecent(projectRepository.findFavoriteProjects(jwtService.getUserIdFromToken(servletRequest), pageable));
+        Page<ProjectResponseDto> projectPage = projectRepository.findFavoriteProjects(jwtService.getUserIdFromToken(servletRequest), pageable);
+        List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
+        return new PageApiResponse<>(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
     }
 
     // 내가 작성한 프로젝트 가져오기
-    public List<ProjectResponseDto> findMyProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
+    public PageApiResponse<?> findMyProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        return checkRecent(projectRepository.findMyProjects(jwtService.getUserIdFromToken(servletRequest), pageable));
+        Page<ProjectResponseDto> projectPage = projectRepository.findMyProjects(jwtService.getUserIdFromToken(servletRequest), pageable);
+        List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
+        return new PageApiResponse<>(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
     }
 
     // 프로젝트 수정
-    public String updateProject(Long projectId, ProjectRequestDto request, MultipartFile file,
+    public String updateProject(Long projectId, ProjectRequestDto dto, MultipartFile file,
                                 HttpServletRequest servletRequest) throws IOException {
 
         Project project = projectRepository.findByProjectId(projectId);
@@ -155,15 +130,14 @@ public class ProjectService {
         String position = "";
         String fileUrl = "";
 
-        if(!file.isEmpty() || file == null) {
+        if(!file.isEmpty() && file != null) {
             awsS3Service.deleteFileFromS3(project.getProjectFileUrl()); //기존 파일 삭제
             fileUrl = awsS3Service.upload(file);
         }
 
-
         if (!recruits.isEmpty()) recruits.clear();
 
-        for (RecruitRequestDto recruitDto : request.getRecruit()) {
+        for (RecruitRequestDto recruitDto : dto.getRecruit()) {
             recruits.add(Recruit.builder()
                     .project(project)
                     .position(recruitDto.getPosition())
@@ -173,18 +147,35 @@ public class ProjectService {
             position += recruitDto.getPosition() + ", ";
         }
 
-        project.updateTitle(request.getTitle());
+        project.updateTitle(dto.getTitle());
         project.updateProjectFileUrl(fileUrl);
-        project.updateDeadline(request.getDeadline());
-        project.updateImportantQuestion(request.getImportantQuestion());
-        project.updateSoftSkill(request.getSoftSkill());
-        project.updateTechStack(request.getTechStack());
-        project.updateDescription(request.getDescription());
+        project.updateDeadline(dto.getDeadline());
+        project.updateImportantQuestion(dto.getImportantQuestion());
+        project.updateSoftSkill(dto.getSoftSkill());
+        project.updateTechStack(dto.getTechStack());
+        project.updateDescription(dto.getDescription());
         project.updateRecruit(recruits);
         project.updatePosition(position.substring(0, position.length() - 2));
         project.updateLastModifiedAt(LocalDateTime.now());
 
         return "프로젝트 수정 완료";
+
+    }
+
+    public String deleteProject(Long projectId, HttpServletRequest servletRequest) {
+
+        Project project = projectRepository.findByUserUserIdAndProjectId(jwtService.getUserIdFromToken(servletRequest), projectId);
+
+        if(project == null) {
+            throw new RuntimeException("해당 프로젝트는 존재하지 않습니다.");
+        }
+        if(project.getProjectFileUrl() != null && !project.getProjectFileUrl().isEmpty()) {
+            awsS3Service.deleteFileFromS3(project.getProjectFileUrl());
+        }
+
+        projectRepository.delete(project);
+
+        return "프로젝트 삭제 완료";
 
     }
 

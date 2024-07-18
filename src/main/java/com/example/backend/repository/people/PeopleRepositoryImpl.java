@@ -1,5 +1,6 @@
 package com.example.backend.repository.people;
 
+import com.example.backend.common.response.PageApiResponse;
 import com.example.backend.dto.request.people.HotSearchDto;
 import com.example.backend.dto.request.people.PeopleSearchDto;
 import com.example.backend.dto.response.people.PeopleResponseDto;
@@ -8,12 +9,16 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 import static com.example.backend.domain.QProject.project;
 import static com.example.backend.domain.QUser.user;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.util.StringUtils.hasText;
 
 public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
@@ -27,11 +32,13 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
     }
 
     @Override
-    public List<PeopleResponseDto> findPeoples(PeopleSearchDto dto) {
+    public PageApiResponse<List<PeopleResponseDto>> findPeoples(PeopleSearchDto dto) {
 
         OrderSpecifier<?> orderCondition = dto.getSort().equalsIgnoreCase("POPULAR")
                 ? user.favoriteCount.add(project.viewCount).desc()
                 : user.createdAt.desc();
+
+        Pageable pageable = PageRequest.of(dto.getPage(), dto.getSize());
 
         List<PeopleResponseDto> result = queryFactory
                 .select(new QPeopleResponseDto(
@@ -41,16 +48,26 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.position,
                         user.userFileUrl,
                         user.techStack,
-                        user.softSkill))
+                        user.softSkill,
+                        user.userId,
+                        user.createdAt))
                 .from(user)
-                .where(techSizeEq(dto.getTechSize()),
+                .where(techStackEq(dto.getTechStack()),
                         positionEq(dto.getPosition()),
                         keywordEq(dto.getKeyword()))
                 .orderBy(orderCondition)
-                .offset(dto.getPage())
-                .limit(10)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
-        return result;
+
+        long total = queryFactory.selectFrom(user)
+                .where(techStackEq(dto.getTechStack()),
+                        positionEq(dto.getPosition()),
+                        keywordEq(dto.getKeyword()))
+                .fetchCount();
+
+        Page<PeopleResponseDto> peoplePage = new PageImpl<>(result, pageable, total);
+        return new PageApiResponse<>(OK, peoplePage.getContent(), peoplePage.getTotalPages(), peoplePage.getTotalElements());
     }
 
     @Override
@@ -63,7 +80,9 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.position,
                         user.userFileUrl,
                         user.techStack,
-                        user.softSkill))
+                        user.softSkill,
+                        user.userId,
+                        user.createdAt))
                 .from(user)
                 .orderBy(user.viewCount.add(user.favoriteCount).desc())
                 .offset(dto.getPage())
@@ -74,7 +93,8 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
 
     //내가 찜한 사람 목록
     @Override
-    public List<PeopleResponseDto> findFavoritePeoples(Long peopleId, Pageable pageable) { //TODO page 통일할부분 생각하기
+    public PageApiResponse<List<PeopleResponseDto>> findFavoritePeoples(Long peopleId, Pageable pageable) { //TODO page 통일할부분 생각하기
+
         List<PeopleResponseDto> result = queryFactory
                 .select(new QPeopleResponseDto(
                         user.nickname,
@@ -83,21 +103,29 @@ public class PeopleRepositoryImpl implements PeopleRepositoryCustom {
                         user.position,
                         user.userFileUrl,
                         user.techStack,
-                        user.softSkill))
+                        user.softSkill,
+                        user.userId,
+                        user.createdAt))
                 .from(user)
                 .where(user.userLike.contains(peopleId))
                 .orderBy(user.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        return result;
+
+        long total = queryFactory.selectFrom(user)
+                .where(user.userLike.contains(peopleId))
+                .fetchCount();
+
+        Page<PeopleResponseDto> peoplePage = new PageImpl<>(result, pageable, total);
+        return new PageApiResponse<>(OK, peoplePage.getContent(), peoplePage.getTotalPages(), peoplePage.getTotalElements());
     }
 
     //기술 스택 조건 검색
-    private BooleanExpression techSizeEq(String techSize) {
-        if (techSize == null || techSize.trim().isEmpty()) return null;
+    private BooleanExpression techStackEq(String techStack) {
+        if (techStack == null || techStack.trim().isEmpty()) return null;
 
-        String[] split = techSize.split(", ");
+        String[] split = techStack.split(", ");
         BooleanExpression condition = null;
 
         for (String stack : split) {

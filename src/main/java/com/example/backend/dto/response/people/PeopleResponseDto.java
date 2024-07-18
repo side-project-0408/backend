@@ -3,6 +3,9 @@ package com.example.backend.dto.response.people;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 @Data
 public class PeopleResponseDto {
 
@@ -20,9 +23,15 @@ public class PeopleResponseDto {
 
     private String softSkill;
 
+    private Long userId;
+
+    private boolean recent;
+
+    private LocalDateTime createdAt;
+
     @QueryProjection
     public PeopleResponseDto(String nickname, int favoriteCount, int viewCount, String position, String userFileUrl,
-                             String techStack, String softSkill) {
+                             String techStack, String softSkill, Long userId, LocalDateTime createdAt) {
         this.nickname = nickname;
         this.favoriteCount = favoriteCount;
         this.viewCount = viewCount;
@@ -30,5 +39,12 @@ public class PeopleResponseDto {
         this.userFileUrl = userFileUrl;
         this.techStack = techStack;
         this.softSkill = softSkill;
+        this.userId = userId;
+        this.recent = isRecent(createdAt);
+        this.createdAt = createdAt;
+    }
+
+    public boolean isRecent(LocalDateTime createdAt) {
+        return ChronoUnit.DAYS.between(createdAt, LocalDateTime.now()) <= 7 ? true : false;
     }
 }
