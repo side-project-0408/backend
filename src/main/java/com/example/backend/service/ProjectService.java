@@ -91,6 +91,7 @@ public class ProjectService {
 
     // 프로젝트 상세 정보 가져오기
     public ProjectDetailResponseDto findProject(Long projectId) {
+        projectRepository.updateViewCount(projectId);
         List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
         return (content.isEmpty()) ? null : content.get(0);
     }
