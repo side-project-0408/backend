@@ -94,12 +94,12 @@ public class Project {
         this.lastModifiedAt = lastModifiedAt;
     }
 
-    public void updateRecruit(List<Recruit> recruits) {
-        this.recruits = recruits;
-    }
+    public void updateRecruit(List<Recruit> recruits) {this.recruits = recruits;}
 
     public void updateFavoriteCount(int count) {this.favoriteCount += count;}
 
     public void updatePosition(String position) {this.position = position;}
+
+    public void addProjectLike(Long userId) {this.projectLike.add(userId);}
 
 }

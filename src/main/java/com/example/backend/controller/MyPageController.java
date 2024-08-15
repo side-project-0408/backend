@@ -2,7 +2,6 @@ package com.example.backend.controller;
 
 import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.common.response.PageApiResponse;
-import com.example.backend.domain.Project;
 import com.example.backend.domain.User;
 import com.example.backend.dto.request.people.UpdateUserRequestDto;
 import com.example.backend.dto.request.project.ProjectRequestDto;
@@ -14,8 +13,8 @@ import com.example.backend.service.AwsS3Service;
 import com.example.backend.service.JwtService;
 import com.example.backend.service.PeopleService;
 import com.example.backend.service.ProjectService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,10 +37,10 @@ public class MyPageController {
 
     //마이페이지 내 정보 조회
     @GetMapping("/users")
-    public CommonApiResponse<PeopleDetailResponseDto> getUser(HttpServletRequest servletRequest) {
+    public CommonApiResponse<PeopleDetailResponseDto> getUser(Authentication authentication) {
 
         // JWT 토큰에서 userId 추출
-        Long userId = jwtService.getUserIdFromToken(servletRequest);
+        Long userId = jwtService.getUserIdFromAuthentication(authentication);
 
         User user = peopleRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
@@ -54,9 +53,9 @@ public class MyPageController {
     @PatchMapping("/users")
     public CommonApiResponse<?> editUser(@RequestPart UpdateUserRequestDto dto,
                                          @RequestPart(required = false) MultipartFile file,
-                                         HttpServletRequest servletRequest) throws IOException {
+                                         Authentication authentication) throws IOException {
 
-        Long userId = jwtService.getUserIdFromToken(servletRequest);
+        Long userId = jwtService.getUserIdFromAuthentication(authentication);
 
         return new CommonApiResponse<>(OK, peopleService.update(userId, dto, file));
     }
@@ -66,27 +65,27 @@ public class MyPageController {
     public CommonApiResponse<?> updateProject(@PathVariable("projectId") Long projectId,
                                               @RequestPart ProjectRequestDto dto,
                                               @RequestPart (required = false) MultipartFile file,
-                                              HttpServletRequest servletRequest) throws IOException {
-        return new CommonApiResponse<>(OK, projectService.updateProject(projectId, dto, file, servletRequest));
+                                              Authentication authentication) throws IOException {
+        return new CommonApiResponse<>(OK, projectService.updateProject(projectId, dto, file, authentication));
     }
 
 
     //내가 작성한 프로젝트 삭제
     @DeleteMapping("/posts/{projectId}")
-    public CommonApiResponse<?> deleteProject(@PathVariable("projectId") Long projectId, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>(OK, projectService.deleteProject(projectId, servletRequest));
+    public CommonApiResponse<?> deleteProject(@PathVariable("projectId") Long projectId, Authentication authentication) {
+        return new CommonApiResponse<>(OK, projectService.deleteProject(projectId, authentication));
     }
 
     //내가 찜한 프로젝트 목록
     @GetMapping("/projects/favorite")
-    public CommonApiResponse<?> getFavoriteProjects(@ModelAttribute ProjectSearchDto request, HttpServletRequest servletRequest) {
-        return new CommonApiResponse<>(OK, projectService.findFavoriteProjects(servletRequest, request));
+    public CommonApiResponse<?> getFavoriteProjects(@ModelAttribute ProjectSearchDto request, Authentication authentication) {
+        return new CommonApiResponse<>(OK, projectService.findFavoriteProjects(authentication, request));
     }
 
     //내가 작성한 프로젝트 목록
     @GetMapping("/posts")
-    public PageApiResponse<?> getMyProjects(@ModelAttribute ProjectSearchDto request, HttpServletRequest servletRequest) {
-        return projectService.findMyProjects(servletRequest, request);
+    public PageApiResponse<?> getMyProjects(@ModelAttribute ProjectSearchDto request, Authentication authentication) {
+        return projectService.findMyProjects(authentication, request);
     }
 
     //인증 메일 보내기

@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -78,6 +79,7 @@ public class JwtService {
             return "리프레시 토큰이 아닙니다.";
 
         Claims claims = getClaimsFromToken(refreshToken);
+
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(
                 User.builder()
                         .userId(claims.get("userId", Long.class))
@@ -101,20 +103,19 @@ public class JwtService {
                 .getBody();
     }
 
-    public Long getUserIdFromToken(HttpServletRequest request) {
-        String token = request.getHeader("Authorization").substring(7);
-        return Long.parseLong(getClaimsFromToken(token).get("userId").toString());
-    }
-
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         Claims claims = getClaimsFromToken(token);
-        return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, null);
+        return new UsernamePasswordAuthenticationToken(claims.get("userId").toString(), null, null);
     }
 
     public String addBlackList(HttpServletRequest request) {
         String refreshToken = resolveToken(request);
         jwtRepository.save(TokenBlackList.builder().refreshToken(refreshToken).build());
         return "등록 성공";
+    }
+
+    public Long getUserIdFromAuthentication(Authentication authentication) {
+        return Long.parseLong(authentication.getPrincipal().toString());
     }
 
 }

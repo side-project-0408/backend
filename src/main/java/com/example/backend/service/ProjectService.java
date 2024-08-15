@@ -11,11 +11,11 @@ import com.example.backend.dto.request.project.RecruitRequestDto;
 import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
 import com.example.backend.repository.project.ProjectRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +38,7 @@ public class ProjectService {
     private final JwtService jwtService;
 
     // 프로젝트 저장
-    public String postProject(ProjectRequestDto dto, MultipartFile file, HttpServletRequest servletRequest) throws IOException {
+    public String postProject(ProjectRequestDto dto, MultipartFile file, Authentication authentication) throws IOException {
 
         List<Recruit> recruits = new ArrayList<>();
         StringBuilder positionBuilder = new StringBuilder();
@@ -49,7 +49,7 @@ public class ProjectService {
         }
 
         Project project = Project.builder()
-                .user(User.builder().userId(jwtService.getUserIdFromToken(servletRequest)).build())
+                .user(User.builder().userId(jwtService.getUserIdFromAuthentication(authentication)).build())
                 .title(dto.getTitle())
                 .projectFileUrl(fileUrl)
                 .deadline(dto.getDeadline())
@@ -104,28 +104,28 @@ public class ProjectService {
     }
 
     // 내가 찜한 프로젝트 목록 가져오기
-    public PageApiResponse<?> findFavoriteProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
+    public PageApiResponse<?> findFavoriteProjects(Authentication authentication, ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        Page<ProjectResponseDto> projectPage = projectRepository.findFavoriteProjects(jwtService.getUserIdFromToken(servletRequest), pageable);
+        Page<ProjectResponseDto> projectPage = projectRepository.findFavoriteProjects(jwtService.getUserIdFromAuthentication(authentication), pageable);
         List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
         return new PageApiResponse<>(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
     }
 
     // 내가 작성한 프로젝트 가져오기
-    public PageApiResponse<?> findMyProjects(HttpServletRequest servletRequest, ProjectSearchDto request) {
+    public PageApiResponse<?> findMyProjects(Authentication authentication, ProjectSearchDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        Page<ProjectResponseDto> projectPage = projectRepository.findMyProjects(jwtService.getUserIdFromToken(servletRequest), pageable);
+        Page<ProjectResponseDto> projectPage = projectRepository.findMyProjects(jwtService.getUserIdFromAuthentication(authentication), pageable);
         List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
         return new PageApiResponse<>(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
     }
 
     // 프로젝트 수정
     public String updateProject(Long projectId, ProjectRequestDto dto, MultipartFile file,
-                                HttpServletRequest servletRequest) throws IOException {
+                                Authentication authentication) throws IOException {
 
         Project project = projectRepository.findByProjectId(projectId);
 
-        if(!(project.getUser().getUserId() == jwtService.getUserIdFromToken(servletRequest)))
+        if(!(project.getUser().getUserId() == jwtService.getUserIdFromAuthentication(authentication)))
             throw new RuntimeException("프로젝트 작성자가 아닙니다.");
 
         List<Recruit> recruits = project.getRecruits();
@@ -161,9 +161,9 @@ public class ProjectService {
 
     }
 
-    public String deleteProject(Long projectId, HttpServletRequest servletRequest) {
+    public String deleteProject(Long projectId, Authentication authentication) {
 
-        Project project = projectRepository.findByUserUserIdAndProjectId(jwtService.getUserIdFromToken(servletRequest), projectId);
+        Project project = projectRepository.findByUserUserIdAndProjectId(jwtService.getUserIdFromAuthentication(authentication), projectId);
 
         if(project == null) {
             throw new RuntimeException("해당 프로젝트는 존재하지 않습니다.");

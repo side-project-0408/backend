@@ -5,8 +5,8 @@ import com.example.backend.common.response.PageApiResponse;
 import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.service.ProjectService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,8 +24,8 @@ public class ProjectController {
     @PostMapping("/projects")
     public CommonApiResponse<?> postProject(@RequestPart ProjectRequestDto dto,
                                             @RequestPart(required = false) MultipartFile file,
-                                            HttpServletRequest servletRequest) throws IOException {
-        return new CommonApiResponse<>(OK, projectService.postProject(dto, file, servletRequest));
+                                            Authentication authentication) throws IOException {
+        return new CommonApiResponse<>(OK, projectService.postProject(dto, file, authentication));
     }
 
     // 프로젝트 목록 가져오기
