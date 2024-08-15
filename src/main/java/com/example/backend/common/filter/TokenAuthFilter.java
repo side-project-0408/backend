@@ -33,7 +33,6 @@ public class TokenAuthFilter extends OncePerRequestFilter {
             if (!jwtService.validToken(token)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
                 response.getWriter().write("token has expired");
-                response.getWriter().flush();
                 return;
             }
             UsernamePasswordAuthenticationToken authentication = jwtService.getAuthentication(token);

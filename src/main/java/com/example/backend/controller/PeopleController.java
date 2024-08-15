@@ -75,4 +75,5 @@ public class PeopleController {
         proposalService.sendProposal(receiver, proposer);
         return new CommonApiResponse<>(OK, "제안 신청이 성공하였습니다.");
     }
+
 }
