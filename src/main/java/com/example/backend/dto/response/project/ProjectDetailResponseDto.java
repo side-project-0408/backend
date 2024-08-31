@@ -45,10 +45,10 @@ public class ProjectDetailResponseDto {
 
     private LocalDateTime lastModifiedAt;
 
-    private List<RecruitRequestDto> recruit;
+    private List<RecruitRequestDto> recruits;
 
     @QueryProjection
-    public ProjectDetailResponseDto(Long projectId, Long userId, String nickname, String userFileUrl, String projectFileUrl, String title, String techStack, String softSkill, String importantQuestion, LocalDate deadline, String recruitment, Boolean employmentStatus, int viewCount, int favoriteCount, String description, LocalDateTime createdAt, LocalDateTime lastModifiedAt, List<RecruitRequestDto> recruit) {
+    public ProjectDetailResponseDto(Long projectId, Long userId, String nickname, String userFileUrl, String projectFileUrl, String title, String techStack, String softSkill, String importantQuestion, LocalDate deadline, String recruitment, Boolean employmentStatus, int viewCount, int favoriteCount, String description, LocalDateTime createdAt, LocalDateTime lastModifiedAt, List<RecruitRequestDto> recruits) {
         this.projectId = projectId;
         this.userId = userId;
         this.nickname = nickname;
@@ -66,7 +66,7 @@ public class ProjectDetailResponseDto {
         this.description = description;
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
-        this.recruit = recruit;
+        this.recruits = recruits;
     }
 
 }

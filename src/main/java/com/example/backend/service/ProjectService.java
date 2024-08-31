@@ -93,7 +93,7 @@ public class ProjectService {
 
         List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
 
-        return (content == null) ? null : content.get(0);
+        return (content.isEmpty()) ? null : content.get(0);
 
     }
 

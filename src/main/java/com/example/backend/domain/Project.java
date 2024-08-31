@@ -62,7 +62,7 @@ public class Project {
 
     @Builder.Default
     @ElementCollection
-    @CollectionTable(name = "projectLike", joinColumns = @JoinColumn(name = "project_id"))
+    @CollectionTable(name = "project_favorite", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "user_id")
     private Set<Long> projectLike = new HashSet<>();
 
