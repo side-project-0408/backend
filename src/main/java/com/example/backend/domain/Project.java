@@ -78,10 +78,10 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private List<Recruit> recruits = new ArrayList<>();
 
-    public void updateProjectDetails(String title, String projectFileUrl, LocalDate deadline,
-                                     String importantQuestion, String softSkill, String techStack,
-                                     String description, List<Recruit> recruits, String position,
-                                     LocalDateTime lastModifiedAt) {
+    public void update(String title, String projectFileUrl, LocalDate deadline,
+                       String importantQuestion, String softSkill, String techStack,
+                       String description, List<Recruit> recruits, String position,
+                       LocalDateTime lastModifiedAt) {
         this.title = title;
         this.projectFileUrl = projectFileUrl;
         this.deadline = deadline;

@@ -4,6 +4,7 @@ import com.example.backend.common.response.CommonApiResponse;
 import com.example.backend.common.response.PageApiResponse;
 import com.example.backend.dto.request.project.ProjectRequestDto;
 import com.example.backend.dto.request.project.ProjectSearchDto;
+import com.example.backend.service.AwsS3Service;
 import com.example.backend.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -20,30 +21,32 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+    private final AwsS3Service awsS3Service;
+
     // 프로젝트 저장
     @PostMapping("/projects")
-    public CommonApiResponse<?> postProject(@RequestPart ProjectRequestDto dto,
+    public CommonApiResponse<?> create(@RequestPart ProjectRequestDto dto,
                                             @RequestPart(required = false) MultipartFile file,
                                             Authentication authentication) throws IOException {
-        return new CommonApiResponse<>(OK, projectService.postProject(dto, file, authentication));
+        return new CommonApiResponse<>(OK, projectService.create(dto, file, authentication));
     }
 
     // 프로젝트 목록 가져오기
     @GetMapping("/projects")
-    public PageApiResponse<?> getProjects(@ModelAttribute ProjectSearchDto request) {
-        return projectService.findProjects(request);
+    public PageApiResponse<?> findList(@ModelAttribute ProjectSearchDto request) {
+        return projectService.findList(request);
     }
 
     // 프로젝트 상세 정보 가져오기
     @GetMapping("/projects/{projectId}")
-    public CommonApiResponse<?> getProject(@PathVariable Long projectId) {
-        return new CommonApiResponse<>(OK, projectService.findProject(projectId));
+    public CommonApiResponse<?> findById(@PathVariable Long projectId) {
+        return new CommonApiResponse<>(OK, projectService.findById(projectId));
     }
 
     // 핫 프로젝트 목록 가져오기
     @GetMapping("/projects/hot")
-    public CommonApiResponse<?> getHotProjects(@RequestParam int size) {
-        return new CommonApiResponse<>(OK, projectService.findHotProjects(size));
+    public CommonApiResponse<?> findHotList(@RequestParam int size) {
+        return new CommonApiResponse<>(OK, projectService.findHotList(size));
     }
 
 }

@@ -66,36 +66,35 @@ public class MyPageController {
                                               @RequestPart ProjectRequestDto dto,
                                               @RequestPart (required = false) MultipartFile file,
                                               Authentication authentication) throws IOException {
-        return new CommonApiResponse<>(OK, projectService.updateProject(projectId, dto, file, authentication));
+        return new CommonApiResponse<>(OK, projectService.update(projectId, dto, file, authentication));
     }
-
 
     //내가 작성한 프로젝트 삭제
     @DeleteMapping("/posts/{projectId}")
     public CommonApiResponse<?> deleteProject(@PathVariable("projectId") Long projectId, Authentication authentication) {
-        return new CommonApiResponse<>(OK, projectService.deleteProject(projectId, authentication));
+        return new CommonApiResponse<>(OK, projectService.delete(projectId, authentication));
     }
 
     //내가 찜한 프로젝트 목록
     @GetMapping("/projects/favorite")
-    public CommonApiResponse<?> getFavoriteProjects(@ModelAttribute ProjectSearchDto request, Authentication authentication) {
-        return new CommonApiResponse<>(OK, projectService.findFavoriteProjects(authentication, request));
+    public PageApiResponse<?> findFavoriteProjects(@ModelAttribute ProjectSearchDto request, Authentication authentication) {
+        return projectService.findFavoriteList(authentication, request);
     }
 
     //내가 작성한 프로젝트 목록
     @GetMapping("/posts")
-    public PageApiResponse<?> getMyProjects(@ModelAttribute ProjectSearchDto request, Authentication authentication) {
-        return projectService.findMyProjects(authentication, request);
+    public PageApiResponse<?> findMyProjects(@ModelAttribute ProjectSearchDto request, Authentication authentication) {
+        return projectService.findMyList(authentication, request);
     }
 
     //인증 메일 보내기
-    @PostMapping("/verificationCode")
+    @PostMapping("/verification-code")
     public CommonApiResponse<?> sendVerificationCode(@RequestParam String email) {
         return new CommonApiResponse<>(OK, peopleService.sendVerificationCode(email));
     }
 
     //인증 메일 확인
-    @GetMapping("/verificationCode")
+    @GetMapping("/verification-code")
     public CommonApiResponse<?> checkVerificationCode(@RequestParam String email, @RequestParam String code) {
         return new CommonApiResponse<>(OK, peopleService.checkVerificationCode(email, code));
     }

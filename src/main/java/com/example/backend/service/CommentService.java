@@ -30,7 +30,7 @@ public class CommentService {
     private final JwtService jwtService;
 
     // 댓글 저장
-    public String postComment(Long projectId, String content, Authentication authentication) {
+    public String create(Long projectId, String content, Authentication authentication) {
 
         commentRepository.save(Comment.builder()
                 .user(User.builder().userId(jwtService.getUserIdFromAuthentication(authentication)).build())
@@ -44,7 +44,7 @@ public class CommentService {
     }
 
     // 댓글 목록 가져오기
-    public SliceApiResponse<?> getComments(Long projectId, int page, int size) {
+    public SliceApiResponse<?> findList(Long projectId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
@@ -55,7 +55,7 @@ public class CommentService {
     }
 
     // 댓글 수정
-    public String updateComment(Long projectId, CommentRequestDto request, Authentication authentication) {
+    public String update(Long projectId, CommentRequestDto request, Authentication authentication) {
 
         Comment comment = commentRepository.findByCommentId(request.getCommentId());
 
@@ -70,7 +70,7 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public String deleteComment(Long projectId, Long commentId, Authentication authentication) {
+    public String delete(Long projectId, Long commentId, Authentication authentication) {
 
         Comment comment = commentRepository.findByCommentId(commentId);
 

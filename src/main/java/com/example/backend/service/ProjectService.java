@@ -38,7 +38,7 @@ public class ProjectService {
     private final JwtService jwtService;
 
     // 프로젝트 저장
-    public String postProject(ProjectRequestDto dto, MultipartFile file, Authentication authentication) throws IOException {
+    public String create(ProjectRequestDto dto, MultipartFile file, Authentication authentication) throws IOException {
 
         List<Recruit> recruits = new ArrayList<>();
         StringBuilder positionBuilder = new StringBuilder();
@@ -62,17 +62,7 @@ public class ProjectService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        for (RecruitRequestDto recruitDto : dto.getRecruit()) {
-            recruits.add(Recruit.builder()
-                    .project(project)
-                    .position(recruitDto.getPosition())
-                    .currentCount(recruitDto.getCurrentCount())
-                    .targetCount(recruitDto.getTargetCount())
-                    .build());
-            positionBuilder = positionBuilder.append(recruitDto.getPosition()).append(", ");
-        }
-
-        String position = positionBuilder.length() > 0 ? positionBuilder.substring(0, positionBuilder.length() - 2) : "";
+        String position = addRecruitsAndGetPositionCsv(project, dto, recruits, positionBuilder);
 
         project.updatePosition(position);
         project.updateRecruit(recruits);
@@ -84,54 +74,71 @@ public class ProjectService {
     }
 
     // 프로젝트 목록 가져오기
-    public PageApiResponse<?> findProjects(ProjectSearchDto request) {
+    public PageApiResponse<?> findList(ProjectSearchDto request) {
+
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+
         Page<ProjectResponseDto> projectPage = projectRepository.findProjects(pageable, request);
+
         List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
-        return new PageApiResponse(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
+
+        return new PageApiResponse<>(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
+
     }
 
     // 프로젝트 상세 정보 가져오기
-    public ProjectDetailResponseDto findProject(Long projectId) {
+    public ProjectDetailResponseDto findById(Long projectId) {
+
         projectRepository.updateViewCount(projectId);
+
         List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
-        return (content.isEmpty()) ? null : content.get(0);
+
+        return (content == null) ? null : content.get(0);
+
     }
 
     // 핫 프로젝트 목록 가져오기
-    public List<ProjectResponseDto> findHotProjects(int size) {
+    public List<ProjectResponseDto> findHotList(int size) {
         return checkRecent(projectRepository.findHotProjects(size));
     }
 
     // 내가 찜한 프로젝트 목록 가져오기
-    public PageApiResponse<?> findFavoriteProjects(Authentication authentication, ProjectSearchDto request) {
+    public PageApiResponse<?> findFavoriteList(Authentication authentication, ProjectSearchDto request) {
+
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+
         Page<ProjectResponseDto> projectPage = projectRepository.findFavoriteProjects(jwtService.getUserIdFromAuthentication(authentication), pageable);
+
         List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
+
         return new PageApiResponse<>(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
+
     }
 
     // 내가 작성한 프로젝트 가져오기
-    public PageApiResponse<?> findMyProjects(Authentication authentication, ProjectSearchDto request) {
+    public PageApiResponse<?> findMyList(Authentication authentication, ProjectSearchDto request) {
+
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+
         Page<ProjectResponseDto> projectPage = projectRepository.findMyProjects(jwtService.getUserIdFromAuthentication(authentication), pageable);
+
         List<ProjectResponseDto> projects = checkRecent(projectPage.getContent());
+
         return new PageApiResponse<>(OK, projects, projectPage.getTotalPages(), projectPage.getTotalElements());
+
     }
 
     // 프로젝트 수정
-    public String updateProject(Long projectId, ProjectRequestDto dto, MultipartFile file,
-                                Authentication authentication) throws IOException {
+    public String update(Long projectId, ProjectRequestDto dto, MultipartFile file,
+                         Authentication authentication) throws IOException {
 
         Project project = projectRepository.findByProjectId(projectId);
+        List<Recruit> recruits = project.getRecruits();
+        StringBuilder positionBuilder = new StringBuilder();
+        String fileUrl = "";
 
         if(!(project.getUser().getUserId() == jwtService.getUserIdFromAuthentication(authentication)))
             throw new RuntimeException("프로젝트 작성자가 아닙니다.");
-
-        List<Recruit> recruits = project.getRecruits();
-
-        StringBuilder positionBuilder = new StringBuilder();
-        String fileUrl = "";
 
         if(!file.isEmpty() && file != null) {
             awsS3Service.deleteFileFromS3(project.getProjectFileUrl()); //기존 파일 삭제
@@ -140,19 +147,9 @@ public class ProjectService {
 
         if (!recruits.isEmpty()) recruits.clear();
 
-        for (RecruitRequestDto recruitDto : dto.getRecruit()) {
-            recruits.add(Recruit.builder()
-                    .project(project)
-                    .position(recruitDto.getPosition())
-                    .currentCount(recruitDto.getCurrentCount())
-                    .targetCount(recruitDto.getTargetCount())
-                    .build());
-            positionBuilder = positionBuilder.append(recruitDto.getPosition()).append(", ");
-        }
+        String position = addRecruitsAndGetPositionCsv(project, dto, recruits, positionBuilder);
 
-        String position = positionBuilder.length() > 0 ? positionBuilder.substring(0, positionBuilder.length() - 2) : "";
-
-        project.updateProjectDetails(dto.getTitle(), fileUrl, dto.getDeadline(),
+        project.update(dto.getTitle(), fileUrl, dto.getDeadline(),
                 dto.getImportantQuestion(), dto.getSoftSkill(),
                 dto.getTechStack(), dto.getDescription(),
                 recruits, position, LocalDateTime.now());
@@ -161,7 +158,7 @@ public class ProjectService {
 
     }
 
-    public String deleteProject(Long projectId, Authentication authentication) {
+    public String delete(Long projectId, Authentication authentication) {
 
         Project project = projectRepository.findByUserUserIdAndProjectId(jwtService.getUserIdFromAuthentication(authentication), projectId);
 
@@ -185,6 +182,23 @@ public class ProjectService {
             project.setRecent(recent);
         }
         return projects;
+    }
+
+    // Recuruit 저장, PositionCsv 반환
+    private String addRecruitsAndGetPositionCsv(Project project, ProjectRequestDto dto, List<Recruit> recruits, StringBuilder positionBuilder) {
+
+        for (RecruitRequestDto recruitDto : dto.getRecruit()) {
+            recruits.add(Recruit.builder()
+                    .project(project)
+                    .position(recruitDto.getPosition())
+                    .currentCount(recruitDto.getCurrentCount())
+                    .targetCount(recruitDto.getTargetCount())
+                    .build());
+            positionBuilder.append(recruitDto.getPosition()).append(", ");
+        }
+
+        return positionBuilder.length() > 0 ? positionBuilder.substring(0, positionBuilder.length() - 2) : "";
+
     }
 
 }

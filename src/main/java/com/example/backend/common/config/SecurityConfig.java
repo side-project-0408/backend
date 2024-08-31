@@ -1,7 +1,6 @@
 package com.example.backend.common.config;
 
 import com.example.backend.common.filter.TokenAuthFilter;
-import com.example.backend.common.handler.CustomAuthenticationEntryPoint;
 import com.example.backend.common.handler.OAuth2SuccessHandler;
 import com.example.backend.service.CustomOauth2UserService;
 import com.example.backend.service.JwtService;
@@ -28,8 +27,6 @@ public class SecurityConfig {
     private final CustomOauth2UserService oAuth2UserService;
 
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
-
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     private final JwtService jwtService;
 
@@ -59,22 +56,20 @@ public class SecurityConfig {
                                 .userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler))
 
-                .addFilterBefore(new TokenAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
-
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint))
-
                 .authorizeHttpRequests(authorizeRequest -> authorizeRequest
-                                .requestMatchers(
-                                        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/projects"),
-                                        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/projects/**"), // /projects/hot 포함
-                                        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/comments/**"),
-                                        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/peoples"),
-                                        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/peoples/**"), // /peoples/hot 포함
-                                        AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/users/nickname"),
-                                        AntPathRequestMatcher.antMatcher("/favicon.ico"),
-                                        AntPathRequestMatcher.antMatcher("/error")
-                                ).permitAll()
-                                .anyRequest().authenticated());
+                        .requestMatchers(
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/projects"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/projects/**"), // /projects/hot 포함
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/comments/**"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/peoples"),
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/peoples/**"), // /peoples/hot 포함
+                                AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/users/nickname"),
+                                AntPathRequestMatcher.antMatcher("/favicon.ico"),
+                                AntPathRequestMatcher.antMatcher("/error")
+                        ).permitAll()
+                        .anyRequest().authenticated())
+
+                .addFilterBefore(new TokenAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 

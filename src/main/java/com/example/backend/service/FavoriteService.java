@@ -21,11 +21,11 @@ public class FavoriteService {
     private final JwtService jwtService;
 
     // 프로젝트 찜하기
-    public String projectFavorite(Long projectId, Authentication authentication) {
+    public String addProject(Long projectId, Long userId) {
 
         Project project = projectRepository.findByProjectId(projectId);
 
-        project.addProjectLike(jwtService.getUserIdFromAuthentication(authentication));
+        project.addProjectLike(userId);
         project.updateFavoriteCount(1);
 
         return "프로젝트 찜하기 완료";
@@ -33,7 +33,7 @@ public class FavoriteService {
     }
 
     // 프로젝트 찜하기 취소
-    public String projectFavoriteCancel(Long projectId, Authentication authentication) {
+    public String deleteProject(Long projectId, Authentication authentication) {
 
         Project project = projectRepository.findByProjectId(projectId);
 
@@ -44,7 +44,7 @@ public class FavoriteService {
 
     }
 
-    public String userFavorite(Long favoriteId, Authentication authentication) {
+    public String addUser(Long favoriteId, Authentication authentication) {
 
         User user = peopleRepository.findUserByUserId(favoriteId);
 
@@ -55,7 +55,7 @@ public class FavoriteService {
 
     }
 
-    public String userFavoriteCancel(Long favoriteId, Authentication authentication) {
+    public String deleteUser(Long favoriteId, Authentication authentication) {
 
         User user = peopleRepository.findUserByUserId(favoriteId);
 
