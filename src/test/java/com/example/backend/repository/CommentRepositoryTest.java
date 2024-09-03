@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CommentRepositoryTest {
 
     @Autowired
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
 
     @Test
     void findByCommentId_값이_있을_때() {

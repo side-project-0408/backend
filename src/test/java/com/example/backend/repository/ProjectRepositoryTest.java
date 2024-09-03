@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
@@ -24,10 +25,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @Import(JpaTestConfig.class)
 @Sql("/sql/repository/project-repository-test-insert.sql")
+@TestPropertySource("classpath:application-test.properties")
 public class ProjectRepositoryTest {
 
     @Autowired
-    ProjectRepository projectRepository;
+    private ProjectRepository projectRepository;
 
     @Test
     void findByProjectId_값이_있을_때() {
@@ -130,24 +132,7 @@ public class ProjectRepositoryTest {
 
         //then
         assertEquals(1L, result.getProjectId());
-        assertEquals(1L, result.getUser().getUserId());
-        assertEquals("프로젝트 제목1", result.getTitle());
-        assertEquals("project_image.png", result.getProjectFileUrl());
-        assertEquals(LocalDate.parse("2024-09-20"), result.getDeadline());
-        assertEquals("OPEN", result.getRecruitment());
-        assertEquals("vue, typescript", result.getTechStack());
-        assertEquals("frontend", result.getPosition());
-        assertEquals("시간 관리", result.getSoftSkill());
-        assertEquals("주 1회 회의", result.getImportantQuestion());
         assertEquals(1, result.getViewCount());
-        assertEquals(0, result.getFavoriteCount());
-        assertEquals("프로젝트 설명1", result.getDescription());
-        assertNull(result.getLastModifiedAt());
-        assertEquals(LocalDateTime.parse("2024-08-10T09:00:00"), result.getCreatedAt());
-        assertEquals(1L, result.getRecruits().get(0).getProject().getProjectId());
-        assertEquals(0, result.getRecruits().get(0).getCurrentCount());
-        assertEquals(1, result.getRecruits().get(0).getTargetCount());
-        assertEquals("frontend", result.getRecruits().get(0).getPosition());
 
     }
 

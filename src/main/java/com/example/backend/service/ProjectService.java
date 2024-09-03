@@ -76,6 +76,10 @@ public class ProjectService {
     // 프로젝트 목록 가져오기
     public PageApiResponse<?> findList(ProjectSearchDto request) {
 
+        if (request.getPage() < 0 || request.getSize() <= 0) {
+            new IllegalArgumentException("page는 0 이상, size는 1 이상이어야 합니다.");
+        }
+
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
 
         Page<ProjectResponseDto> projectPage = projectRepository.findProjects(pageable, request);
@@ -137,6 +141,9 @@ public class ProjectService {
         StringBuilder positionBuilder = new StringBuilder();
         String fileUrl = "";
 
+        if (project == null)
+            throw new NullPointerException("해당 프로젝트는 존재하지 않습니다.");
+
         if(!(project.getUser().getUserId() == jwtService.getUserIdFromAuthentication(authentication)))
             throw new RuntimeException("프로젝트 작성자가 아닙니다.");
 
@@ -158,13 +165,17 @@ public class ProjectService {
 
     }
 
+    // 프로젝트 삭제
     public String delete(Long projectId, Authentication authentication) {
 
-        Project project = projectRepository.findByUserUserIdAndProjectId(jwtService.getUserIdFromAuthentication(authentication), projectId);
+        Project project = projectRepository.findByProjectId(projectId);
 
-        if(project == null) {
-            throw new RuntimeException("해당 프로젝트는 존재하지 않습니다.");
-        }
+        if (project == null)
+            throw new NullPointerException("해당 프로젝트는 존재하지 않습니다.");
+
+        if(!(project.getUser().getUserId() == jwtService.getUserIdFromAuthentication(authentication)))
+            throw new RuntimeException("프로젝트 작성자가 아닙니다.");
+
         if(project.getProjectFileUrl() != null && !project.getProjectFileUrl().isEmpty()) {
             awsS3Service.deleteFileFromS3(project.getProjectFileUrl());
         }
