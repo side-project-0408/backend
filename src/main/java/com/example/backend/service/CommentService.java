@@ -59,6 +59,9 @@ public class CommentService {
 
         Comment comment = commentRepository.findByCommentId(request.getCommentId());
 
+        if (comment == null)
+            throw new NullPointerException("해당 댓글은 존재하지 않습니다.");
+
         if (!(comment.getProject().getProjectId().equals(projectId) && comment.getUser().getUserId().equals(jwtService.getUserIdFromAuthentication(authentication))))
             throw new RuntimeException("프로젝트 번호와 댓글 작성자가 일치하지 않습니다.");
 
@@ -73,6 +76,9 @@ public class CommentService {
     public String delete(Long projectId, Long commentId, Authentication authentication) {
 
         Comment comment = commentRepository.findByCommentId(commentId);
+
+        if (comment == null)
+            throw new NullPointerException("해당 댓글은 존재하지 않습니다.");
 
         if (!(comment.getProject().getProjectId().equals(projectId) && comment.getUser().getUserId().equals(jwtService.getUserIdFromAuthentication(authentication))))
             throw new RuntimeException("프로젝트 번호와 댓글 작성자가 일치하지 않습니다.");
