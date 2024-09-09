@@ -6,6 +6,8 @@ import com.example.backend.dto.request.project.ProjectSearchDto;
 import com.example.backend.dto.request.project.RecruitRequestDto;
 import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -41,6 +43,9 @@ public class ProjectServiceTest {
 
     @MockBean
     private AwsS3Service awsS3Service;
+
+    @MockBean
+    private HttpServletResponse response;
 
     @Test
     void 프로젝트_저장_사진이_있을_때() throws IOException {
@@ -176,15 +181,46 @@ public class ProjectServiceTest {
     }
 
     @Test
-    void 프로젝트_상세_정보_가져오기_값이_있을_때() {
+    void 프로젝트_상세_정보_가져오기_값이_있을_때_조회수_증가() {
+
+        //given
+        Cookie cookie = new Cookie("project_view", "[2]");
+
+        //when
+        ProjectDetailResponseDto result = projectService.findById(1L, cookie, response);
+
+        //then
+        assertNotNull(result);
+        assertEquals(1, result.getViewCount()); // 조회수 증가
+
+    }
+
+    @Test
+    void 프로젝트_상세_정보_가져오기_값이_있을_때_조회수_증가_쿠키_X() {
 
         //given
 
         //when
-        ProjectDetailResponseDto result = projectService.findById(1L);
+        ProjectDetailResponseDto result = projectService.findById(1L, null, response);
 
         //then
         assertNotNull(result);
+        assertEquals(1, result.getViewCount()); // 조회수 증가
+
+    }
+
+    @Test
+    void 프로젝트_상세_정보_가져오기_값이_있을_때_조회수_증가_X() {
+
+        //given
+        Cookie cookie = new Cookie("project_view", "[1]_[2]");
+
+        //when
+        ProjectDetailResponseDto result = projectService.findById(1L, cookie, response);
+
+        //then
+        assertNotNull(result);
+        assertEquals(0, result.getViewCount()); // 조회수 증가
 
     }
 
@@ -192,9 +228,10 @@ public class ProjectServiceTest {
     void 프로젝트_상세_정보_가져오기_값이_없을_때() {
 
         //given
+        Cookie cookie = new Cookie("project_view", "[1]_[2]");
 
         //when
-        ProjectDetailResponseDto result = projectService.findById(10L);
+        ProjectDetailResponseDto result = projectService.findById(10L, cookie, response);
 
         //then
         assertNull(result);

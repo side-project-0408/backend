@@ -11,6 +11,8 @@ import com.example.backend.dto.request.project.RecruitRequestDto;
 import com.example.backend.dto.response.project.ProjectDetailResponseDto;
 import com.example.backend.dto.response.project.ProjectResponseDto;
 import com.example.backend.repository.project.ProjectRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +80,7 @@ public class ProjectService {
     public PageApiResponse<?> findList(ProjectSearchDto request) {
 
         if (request.getPage() < 0 || request.getSize() <= 0) {
-            new IllegalArgumentException("page는 0 이상, size는 1 이상이어야 합니다.");
+            throw new IllegalArgumentException("page는 0 이상, size는 1 이상이어야 합니다.");
         }
 
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
@@ -91,9 +94,31 @@ public class ProjectService {
     }
 
     // 프로젝트 상세 정보 가져오기
-    public ProjectDetailResponseDto findById(Long projectId) {
+    public ProjectDetailResponseDto findById(Long projectId, Cookie cookie, HttpServletResponse response) {
 
-        projectRepository.updateViewCount(projectId);
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime tomorrowMidnight = now.plusDays(1).toLocalDate().atStartOfDay();
+
+        Long leftSeconds = Duration.between(now, tomorrowMidnight).getSeconds();
+
+        if (cookie != null) {
+            if (!cookie.getValue().contains("["+ projectId +"]")) {
+                projectRepository.updateViewCount(projectId);
+                cookie.setValue(cookie.getValue() + "_[" + projectId + "]");
+                cookie.setPath("/");
+                cookie.setMaxAge(leftSeconds.intValue());
+                cookie.setSecure(true);
+                response.addCookie(cookie);
+            }
+        } else {
+            projectRepository.updateViewCount(projectId);
+            Cookie newCookie = new Cookie("project_view", "[" + projectId + "]");
+            newCookie.setPath("/");
+            newCookie.setMaxAge(leftSeconds.intValue());
+            newCookie.setSecure(true);
+            response.addCookie(newCookie);
+        }
 
         List<ProjectDetailResponseDto> content = projectRepository.findDetailByProjectId(projectId);
 
@@ -137,14 +162,16 @@ public class ProjectService {
                          Authentication authentication) throws IOException {
 
         Project project = projectRepository.findByProjectId(projectId);
-        List<Recruit> recruits = project.getRecruits();
         StringBuilder positionBuilder = new StringBuilder();
+        List<Recruit> recruits;
         String fileUrl = "";
 
         if (project == null)
             throw new NullPointerException("해당 프로젝트는 존재하지 않습니다.");
 
-        if(!(project.getUser().getUserId() == jwtService.getUserIdFromAuthentication(authentication)))
+        recruits = project.getRecruits();
+
+        if(!(project.getUser().getUserId().equals(jwtService.getUserIdFromAuthentication(authentication))))
             throw new RuntimeException("프로젝트 작성자가 아닙니다.");
 
         if(!file.isEmpty() && file != null) {
@@ -173,7 +200,7 @@ public class ProjectService {
         if (project == null)
             throw new NullPointerException("해당 프로젝트는 존재하지 않습니다.");
 
-        if(!(project.getUser().getUserId() == jwtService.getUserIdFromAuthentication(authentication)))
+        if(!(project.getUser().getUserId().equals(jwtService.getUserIdFromAuthentication(authentication))))
             throw new RuntimeException("프로젝트 작성자가 아닙니다.");
 
         if(project.getProjectFileUrl() != null && !project.getProjectFileUrl().isEmpty()) {
