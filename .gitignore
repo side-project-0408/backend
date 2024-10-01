@@ -6,7 +6,6 @@ build/
 !**/src/test/**/build/
 application.yml
 application.properties
-applicaion-test.properties
 ### STS ###
 .apt_generated
 .classpath
