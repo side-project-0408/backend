@@ -32,13 +32,13 @@ jobs:
         run: ./gradlew build
 
       - name: Make SSL keystore
-        run: echo "${{ secret.SSL_KEYSTORE }}" | base64 --decode > ./src/main/resourceskeystore.p12
+        run: echo "${{ secrets.SSL_KEYSTORE }}" | base64 --decode > ./src/main/resourceskeystore.p12
 
       - name: Clean bootJar
         run: ./gradlew clean bootJar
 
       - name: Docker login
-        run: docker login -u ${{secret.DOCKER_USERNAME}} -p ${{ secret.DOCKER_PASSWORD }}
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker build & push
         run: |
@@ -57,12 +57,12 @@ jobs:
           ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}
 
       - name: Docker login
-        run: sudo docker login -u ${{secret.DOCKER_USERNAME}} -p ${{ secret.DOCKER_PASSWORD }}
+        run: sudo docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker pull
-        run: sudo docker pull ${{ secret.DOCKER_USERNAME }}/matchmate:server
+        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/matchmate:server
 
       - name: Docker stop & run container
         run: |
-          sudo docker stop ${{ secret.DOCKER_USERNAME }}/matchmate:server 
-          sudo docker run -d -p 443:443 ${{ secret.DOCKER_USERNAME }}/matchmate:server
+          sudo docker stop ${{ secrets.DOCKER_USERNAME }}/matchmate:server 
+          sudo docker run -d -p 443:443 ${{ secrets.DOCKER_USERNAME }}/matchmate:server
