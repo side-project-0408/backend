@@ -25,7 +25,9 @@ jobs:
 
       - name: Make application.properties & yml
         run: |
+          touch ./src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
+          touch ./src/main/resources/application.properties
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
 
       - name: Build with Gradle Wrapper
