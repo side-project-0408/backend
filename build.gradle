@@ -84,6 +84,6 @@ clean {
 	delete file(generated)
 }
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
 }
