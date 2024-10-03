@@ -32,7 +32,6 @@ jobs:
       - name: Build with Gradle Wrapper
         run: |
           chmod +x ./gradlew
-          ./gradlew test -i
           ./gradlew build
 
       - name: Make SSL keystore
