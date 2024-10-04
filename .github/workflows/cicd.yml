@@ -37,7 +37,7 @@ jobs:
           ./gradlew build -x test
 
       - name: Make SSL keystore
-        run: echo "${{ secrets.SSL_KEYSTORE }}" | base64 --decode > ./src/main/resourceskeystore.p12
+        run: echo "${{ secrets.SSL_KEYSTORE }}" | base64 --decode > ./src/main/resources/keystore.p12
 
       - name: Clean bootJar
         run: ./gradlew clean bootJar
@@ -46,10 +46,10 @@ jobs:
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker build
-        run: docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }} .
+        run: docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ secrets.DOCKER_TAG }} .
 
       - name: Docker push
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ secrets.DOCKER_TAG }}
 
   deploy:
     needs: build
@@ -66,10 +66,9 @@ jobs:
         run: sudo docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker pull
-        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}
+        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ secrets.DOCKER_TAG }}
 
       - name: Docker stop & run container
         run: |
-          sudo docker stop ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}
-          sudo docker rm ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}
-          sudo docker run -d -p 443:443 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}
+          sudo docker stop ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ secrets.DOCKER_TAG }}
+          sudo docker run -d -p 443:443 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ secrets.DOCKER_TAG }}
