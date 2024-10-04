@@ -70,5 +70,6 @@ jobs:
 
       - name: Docker stop & run container
         run: |
-          sudo docker stop ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
-          sudo docker run -d -p 443:443 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
+          sudo docker stop ${{ secrets.DOCKER_USERNAME }}
+          sudo docker rm ${{ secrets.DOCKER_USERNAME }}
+          sudo docker run -d --name ${{ secrets.DOCKER_USERNAME }} -p 443:443 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
