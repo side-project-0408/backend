@@ -66,6 +66,7 @@ jobs:
 
       - name: Docker stop & rm
         run: |
+          sudo docker ps -a
           sudo docker stop ${{ secrets.DOCKER_IMAGE }}
           sudo docker rm ${{ secrets.DOCKER_IMAGE }}
 
