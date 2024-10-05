@@ -64,14 +64,13 @@ jobs:
           chmod 400 ec2_key.pem
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}
 
-      - name: Docker login
-        run: sudo docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Docker pull
-        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
-
-      - name: Docker stop & run container
+      - name: Docker stop & rm
         run: |
           sudo docker stop ${{ secrets.DOCKER_IMAGE }}
           sudo docker rm ${{ secrets.DOCKER_IMAGE }}
-          sudo docker run -d --name ${{ secrets.DOCKER_USERNAME }} -p 443:443 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
+
+      - name: Docker login & pull
+        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
+        
+      - name: Docker run
+        run: sudo docker run -d --name ${{ secrets.DOCKER_USERNAME }} -p 443:443 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
