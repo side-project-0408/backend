@@ -3,8 +3,6 @@ name: Java CI/CD with Gradle
 on:
   pull_request:
     branches: [ "cicd-test" ]
-  push:
-    branches: [ "cicd-test" ]
   
 permissions:
   contents: read
@@ -61,7 +59,6 @@ jobs:
           echo "${{ secrets.EC2_PEM_KEY }}" > ec2_key.pem
           chmod 400 ec2_key.pem
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} <<EOF
-          sudo docker ps -a
           sudo docker stop ${{ secrets.DOCKER_IMAGE }}
           sudo docker rm ${{ secrets.DOCKER_IMAGE }}
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
