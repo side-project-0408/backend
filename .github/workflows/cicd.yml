@@ -58,20 +58,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Connect to EC2
+      - name: deploy
         run: |
           echo "${{ secrets.EC2_PEM_KEY }}" > ec2_key.pem
           chmod 400 ec2_key.pem
-          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "sudo docker info"
-
-      - name: Docker stop & rm
-        run: |
+          ssh -i ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}
           sudo docker ps -a
           sudo docker stop ${{ secrets.DOCKER_IMAGE }}
           sudo docker rm ${{ secrets.DOCKER_IMAGE }}
-
-      - name: Docker pull
-        run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
-        
-      - name: Docker run
-        run: sudo docker run -d --name ${{ secrets.DOCKER_IMAGE }} -p 443:443 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
+          sudo docker run -d --name ${{ secrets.DOCKER_IMAGE }} -p 443:443 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG }}
